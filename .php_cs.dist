@@ -1,0 +1,55 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__);
+
+$header = <<<EOF
+This file is part of the Evc Bundle.
+
+PHP version 7.1|7.2|7.3|7.4
+Symfony version 4.4|5.0|5.1
+
+(c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
+
+@author    Alexandre Tranchant <alexandre.tranchant@gmail.com>
+@copyright 2020 Alexandre Tranchant
+@license   Cecill-B http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
+EOF;
+
+
+return PhpCsFixer\Config::create()
+    ->setCacheFile(__DIR__.'/.php_cs.cache')
+    ->setRules([
+        '@DoctrineAnnotation' => true,
+        '@PhpCsFixer' => true,
+        '@Symfony' => true,
+        '@PHPUnit60Migration:risky' => true,
+        '@PHP71Migration' => true,
+        '@PHP71Migration:risky' => true,
+//        'strict_param' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'header_comment' => [
+            'comment_type' => 'PHPDoc',
+            'header' => $header,
+            'location' => 'after_open',
+            'separate' => 'bottom'
+        ],
+        'date_time_immutable' => true,
+        'declare_strict_types' => true,
+        'is_null' => true,
+        'no_alias_functions' =>true,
+        'ordered_class_elements' => [
+            'order' => [
+                'use_trait',
+                'constant_public', 'constant_protected', 'constant_private', 'constant',
+                'property_public_static', 'property_protected_static', 'property_private_static', 'property_static',
+                'property_public', 'property_protected', 'property_private',  'property',
+                'construct', 'destruct',
+                'phpunit',
+                'method_public_static', 'method_protected_static', 'method_private_static', 'method_static',
+                'method_public', 'method_protected', 'method_private', 'method', 'magic'
+            ],
+            'sortAlgorithm' => 'alpha'
+        ]
+    ])
+    ->setFinder($finder);

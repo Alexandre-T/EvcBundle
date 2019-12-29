@@ -1,0 +1,7 @@
+alexandre_evc:
+    class: Alexandre\EvcBundle\AlexandreEvcBundle\Service\EvcService
+    arguments:
+        url: ''
+        api_id: ''
+        username: ''
+        password: ''
