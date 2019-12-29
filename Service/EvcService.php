@@ -3,7 +3,7 @@
  * This file is part of the Evc Bundle.
  *
  * PHP version 7.1|7.2|7.3|7.4
- * Symfony version 4.4|5.0
+ * Symfony version 4.4|5.0|5.1
  *
  * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
@@ -12,10 +12,11 @@
  * @license   Cecill-B http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
  */
 
+declare(strict_types=1);
+
 namespace Alexandre\Evc\Service;
 
 use Alexandre\Evc\Exception\EvcException;
-use Alexandre\Evc\Model\Purchase;
 use Unirest\Request;
 use Unirest\Response;
 
@@ -24,22 +25,21 @@ class EvcService implements EvcServiceInterface
     /**
      * @var string
      */
-    private $url;
-
-    /**
-     * @var string
-     */
     private $api;
 
     /**
      * @var string
      */
-    private $username;
+    private $password;
+    /**
+     * @var string
+     */
+    private $url;
 
     /**
      * @var string
      */
-    private $password;
+    private $username;
 
     /**
      * EvcService constructor.
@@ -58,9 +58,9 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function addCredit(string $customer, int $credit)
+    public function addCredit(string $customer, int $credit): void
     {
         // TODO: Implement addCredit() method.
     }
@@ -70,8 +70,6 @@ class EvcService implements EvcServiceInterface
      *
      * @param string $customer the customer id
      *
-     * @return int
-     *
      * @throws EvcException when an error occured
      */
     public function checkAccount(string $customer): int
@@ -80,22 +78,23 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function createPersonalCustomer(string $customer)
+    public function createPersonalCustomer(string $customer): void
     {
         // TODO: Implement createPersonalCustomer() method.
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
+     *
      * @throws EvcException
      */
     public function exists(string $customer): bool
     {
         $params = [
             'verb' => 'checkevccustomer',
-            'customer' => $customer
+            'customer' => $customer,
         ];
         $response = $this->getRequest($params);
 
@@ -110,11 +109,11 @@ class EvcService implements EvcServiceInterface
         //fail: no user authorization
         //fail: no api authorization
 
-        if (trim($response->body === 'ok: evc customer exists')) {
+        if (trim('ok: evc customer exists' === $response->body)) {
             return true;
         }
 
-        if (trim($response->body === 'fail: unknown evc customer')) {
+        if (trim('fail: unknown evc customer' === $response->body)) {
             return false;
         }
 
@@ -122,15 +121,7 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    public function setCredit(string $customer, int $credit)
-    {
-        // TODO: Implement setCredit() method.
-    }
-
-    /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPurchases(string $customer, int $days): array
     {
@@ -138,58 +129,42 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setCredit(string $customer, int $credit): void
+    {
+        // TODO: Implement setCredit() method.
+    }
+
+    /**
      * Create the URL from check evc customer.
      *
      * @param string $customer the customer id
-     *
-     * @return string
      */
     private function createCheckEvcCustomer(string $customer): string
     {
         return $this->createRequest([
             'verb' => 'checkevccustomer',
-            'customer' => urlencode($customer)
+            'customer' => urlencode($customer),
         ]);
     }
 
     /**
      * Create the full url for the request.
-     *
-     * @param array $params
-     *
-     * @return string
      */
     private function createRequest(array $params): string
     {
-       $request = "appid={$this->api}&username={$this->username}&password={$this->password}";
+        $request = "appid={$this->api}&username={$this->username}&password={$this->password}";
 
-       foreach($params as $key => $parameter) {
-           $request .= '&' . urlencode($key) . '=' . urlencode($parameter);
-       }
+        foreach ($params as $key => $parameter) {
+            $request .= '&'.urlencode($key).'='.urlencode($parameter);
+        }
 
-       return $this->url . '?' . $request;
-    }
-
-    /**
-     * Return the result of Request.
-     *
-     * @param array  $params each params is a set of name and value
-     *
-     * @return Response
-     */
-    private function getRequest(array $params): Response
-    {
-        $headers = $this->getHeaders();
-        $params += $this->getParams();
-        $request = $this->getUrl();
-
-        return Request::get($request, $headers, $params);
+        return $this->url.'?'.$request;
     }
 
     /**
      * Return an array of headers.
-     *
-     * @return array
      */
     private function getHeaders(): array
     {
@@ -197,8 +172,7 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * Return array of default params
-     * @return array
+     * Return array of default params.
      */
     private function getParams(): array
     {
@@ -207,6 +181,20 @@ class EvcService implements EvcServiceInterface
             'password' => $this->password,
             'username' => $this->username,
         ];
+    }
+
+    /**
+     * Return the result of Request.
+     *
+     * @param array $params each params is a set of name and value
+     */
+    private function getRequest(array $params): Response
+    {
+        $headers = $this->getHeaders();
+        $params += $this->getParams();
+        $request = $this->getUrl();
+
+        return Request::get($request, $headers, $params);
     }
 
     private function getUrl(): string

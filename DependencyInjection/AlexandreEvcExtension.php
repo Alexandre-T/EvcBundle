@@ -3,7 +3,7 @@
  * This file is part of the Evc Bundle.
  *
  * PHP version 7.1|7.2|7.3|7.4
- * Symfony version 4.4|5.0
+ * Symfony version 4.4|5.0|5.1
  *
  * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
@@ -11,6 +11,8 @@
  * @copyright 2020 Alexandre Tranchant
  * @license   Cecill-B http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
  */
+
+declare(strict_types=1);
 
 namespace Alexandre\Evc;
 
@@ -24,12 +26,13 @@ class AlexandreEvcExtension extends ConfigurableExtension
 {
     /**
      * Configures the passed container according to the merged configuration.
-     * @param array $mergedConfig the merged config
-     * @param ContainerBuilder $container the container
+     *
+     * @param array            $mergedConfig the merged config
+     * @param ContainerBuilder $container    the container
      *
      * @throws Exception
      */
-    protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
+    protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

@@ -37,10 +37,9 @@
   },
   "scripts": {
     "phpcs": "phpcs src --standard=phpcs.xml -s",
-    "phpcsfixer": "php-cs-fixer fix src --config=.php_cs.dist --allow-risky yes",
+    "phpcsfixer": "php-cs-fixer fix . --config=.php_cs.dist --allow-risky yes",
     "phpmd": "phpmd src/ xml phpmd.xml",
     "phpcs-test": "phpcs tests --standard=phpcs-test.xml -s",
-    "phpcsfixer-test": "php-cs-fixer fix tests --config=.php_cs.dist --allow-risky yes",
     "phpmd-test": "phpmd  tests/ xml phpmd-test.xml --suffixes php --exclude _generated"
   }
 }
