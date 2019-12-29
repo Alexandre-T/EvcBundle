@@ -84,8 +84,19 @@ class EvcService implements EvcServiceInterface
      */
     public function checkAccount(string $customer): int
     {
-        // TODO: Implement checkAccount() method.
-        return 0;
+        $params = [
+            'verb' => 'getcustomeraccount',
+            'customer' => $customer,
+        ];
+        $response = $this->getRequest($params);
+
+        $result = preg_match('/^ok:\s([-+]?\d+)/', $response->body, $matches);
+
+        if (1 === $result && 2 === count($matches)) {
+            return (int) $matches[1];
+        }
+
+        throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
     }
 
     /**

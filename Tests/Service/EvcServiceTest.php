@@ -55,6 +55,70 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
+     * @covers ::checkAccount
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function accountShouldBeHuge(): void
+    {
+        $response = new Response(200, 'ok: 9876543210', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+        self::assertEquals(9876543210, $this->evcService->checkAccount('33333'));
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::checkAccount
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function accountShouldBeNegative(): void
+    {
+        $response = new Response(200, 'ok: -8', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+        self::assertEquals(-8, $this->evcService->checkAccount('33333'));
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::checkAccount
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function accountShouldBeZero(): void
+    {
+        $response = new Response(200, 'ok: 0', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+        self::assertEquals(0, $this->evcService->checkAccount('33333'));
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::checkAccount
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function accountShouldNotBeAccessible(): void
+    {
+        $response = new Response(200, 'fail: this is not a personal customer of you', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
+
+        $this->evcService->checkAccount('33333');
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
      * @covers ::exists
      *
      * @throws Exception    when Aspect Mock is not well initialized
