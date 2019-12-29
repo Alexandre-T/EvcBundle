@@ -33,6 +33,7 @@ class Purchase
      * @var DateTimeInterface
      */
     private $createdAt;
+
     /**
      * The customer id.
      *
@@ -54,31 +55,51 @@ class Purchase
      */
     private $ip;
 
+    /**
+     * Computer name getter.
+     */
     public function getComputer(): string
     {
         return $this->computer;
     }
 
+    /**
+     * Creation datetime getter.
+     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
+    /**
+     * Customer name getter.
+     */
     public function getCustomer(): string
     {
         return $this->customer;
     }
 
+    /**
+     * Filename getter.
+     */
     public function getFilename(): string
     {
         return $this->filename;
     }
 
+    /**
+     * IP getter.
+     */
     public function getIp(): string
     {
         return $this->ip;
     }
 
+    /**
+     * Computer name fluent setter.
+     *
+     * @param string $computer the new computer name
+     */
     public function setComputer(string $computer): Purchase
     {
         $this->computer = $computer;
@@ -86,6 +107,11 @@ class Purchase
         return $this;
     }
 
+    /**
+     * Created datetime fluent setter.
+     *
+     * @param DateTimeInterface $createdAt the new creation datetime
+     */
     public function setCreatedAt(DateTimeInterface $createdAt): Purchase
     {
         $this->createdAt = $createdAt;
@@ -93,6 +119,11 @@ class Purchase
         return $this;
     }
 
+    /**
+     * Customer fluent setter.
+     *
+     * @param string $customer the customer id
+     */
     public function setCustomer(string $customer): Purchase
     {
         $this->customer = $customer;
@@ -100,6 +131,11 @@ class Purchase
         return $this;
     }
 
+    /**
+     * Filename fluent setter.
+     *
+     * @param string $filename the new filename
+     */
     public function setFilename(string $filename): Purchase
     {
         $this->filename = $filename;
@@ -107,6 +143,11 @@ class Purchase
         return $this;
     }
 
+    /**
+     * IP fluent setter.
+     *
+     * @param string $ip the new IP
+     */
     public function setIp(string $ip): Purchase
     {
         $this->ip = $ip;

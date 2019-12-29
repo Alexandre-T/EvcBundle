@@ -30,13 +30,13 @@ class AlexandreEvcExtension extends ConfigurableExtension
      * @param array            $mergedConfig the merged config
      * @param ContainerBuilder $container    the container
      *
-     * @throws Exception
+     * @throws Exception when resource cannot be loaded
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         // you now have these 2 config keys
-        // $config['twitter']['client_id'] and $config['twitter']['client_secret']
+        // $config['twitter']['client_id']
     }
 }

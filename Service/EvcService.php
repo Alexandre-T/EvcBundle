@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Alexandre\Evc\Service;
 
 use Alexandre\Evc\Exception\EvcException;
+use Alexandre\Evc\Model\Purchase;
 use Unirest\Request;
 use Unirest\Response;
 
@@ -31,6 +32,7 @@ class EvcService implements EvcServiceInterface
      * @var string
      */
     private $password;
+
     /**
      * @var string
      */
@@ -58,7 +60,15 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Add some credits to customer balance.
+     *
+     * This is the recommended way for adding/removing points. If the customer purchases at the *same* time,
+     * the balance will still be correct.
+     *
+     * The "credits" value can be negative, so you can subtract with this command as well.
+     *
+     * @param string $customer the customer id
+     * @param int    $credit   the positive or negative number of credits to add (or remove)
      */
     public function addCredit(string $customer, int $credit): void
     {
@@ -71,8 +81,6 @@ class EvcService implements EvcServiceInterface
      * @param string $customer the customer id
      *
      * @throws EvcException when an error occured
-     *
-     * @return int
      */
     public function checkAccount(string $customer): int
     {
@@ -81,9 +89,14 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Create a personal customer.
      *
-     * @throws EvcException when creating personal customer failed.
+     * A personal customer must already as EVC customer. Making him a personal customer allows him to see your reseller
+     * files and creates a personal account balance relationship with you. Only add customers who asked for this.
+     *
+     * @param string $customer the customer id
+     *
+     * @throws EvcException when creating personal customer failed
      */
     public function createPersonalCustomer(string $customer): void
     {
@@ -99,9 +112,13 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Does this customer exists.
      *
-     * @throws EvcException
+     * Note: This doesn't check if this is a personal customer of you. It checks the EVC customer base.
+     *
+     * @param string $customer the customer id
+     *
+     * @throws EvcException when an error occured when accessing EVC API
      */
     public function exists(string $customer): bool
     {
@@ -123,7 +140,12 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns a collection of the purchases performed in the last X (up to 99) days.
+     *
+     * @param string $customer the customer id
+     * @param int    $days     the number of
+     *
+     * @return Purchase[]
      */
     public function getPurchases(string $customer, int $days): array
     {
@@ -132,7 +154,13 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Setting a personal account balance.
+     *
+     * This is not recommended for adding/removing points because the customer might purchase at the same time,
+     * causing a wrong balance.
+     *
+     * @param string $customer the customer id
+     * @param int    $credit   the new account balance
      */
     public function setCredit(string $customer, int $credit): void
     {
@@ -165,8 +193,6 @@ class EvcService implements EvcServiceInterface
      * @param array $params each params is a set of name and value
      *
      * @throws EvcException when response code is different from 200
-     *
-     * @return Response
      */
     private function getRequest(array $params): Response
     {
@@ -183,6 +209,9 @@ class EvcService implements EvcServiceInterface
         return $response;
     }
 
+    /**
+     * URL getter.
+     */
     private function getUrl(): string
     {
         return $this->url;

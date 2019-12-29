@@ -34,13 +34,12 @@
     "symfony/debug": "^4.4",
     "codeception/aspect-mock": "^3.0",
     "friendsofphp/php-cs-fixer": "^2.16",
-    "phpmd/phpmd": "^2.8"
+    "phpmd/phpmd": "^2.8",
+    "squizlabs/php_codesniffer": "^3.5"
   },
   "scripts": {
-    "phpcs": "phpcs src --standard=phpcs.xml -s",
+    "phpcs": "phpcs . --standard=phpcs.xml -s",
     "phpcsfixer": "php-cs-fixer fix . --config=.php_cs.dist --allow-risky yes",
-    "phpmd": "phpmd . xml phpmd.xml --exclude vendor,build",
-    "phpcs-test": "phpcs tests --standard=phpcs-test.xml -s",
-    "phpmd-test": "phpmd  tests/ xml phpmd-test.xml --suffixes php --exclude _generated"
+    "phpmd": "phpmd . xml phpmd.xml --exclude vendor,build"
   }
 }
