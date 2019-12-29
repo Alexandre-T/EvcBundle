@@ -19,6 +19,7 @@ namespace Alexandre\Evc\Tests\Service;
 use Alexandre\Evc\Exception\EvcException;
 use Alexandre\Evc\Service\EvcService;
 use AspectMock\Test as test;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Unirest\Request;
 use Unirest\Response;
@@ -49,6 +50,45 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
+     * @covers ::createPersonalCustomer
+     *
+     * @throws Exception when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function personalCustomerShouldBeCreated(): void
+    {
+        $response = new Response(200, 'ok: customer added', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+        self::assertNull($this->evcService->createPersonalCustomer('33333'));
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::createPersonalCustomer
+     *
+     * @throws Exception when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function personalCustomerShouldNotBeCreated(): void
+    {
+
+        $response = new Response(200, 'fail: customer already exists', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: fail: customer already exists');
+
+        $this->evcService->createPersonalCustomer('33333');
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::exists
+     *
+     * @throws Exception when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
      */
     public function existsShouldReturnFalse(): void
     {
@@ -60,6 +100,10 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
+     * @covers ::exists
+     *
+     * @throws Exception when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
      */
     public function existsShouldReturnTrue(): void
     {
@@ -71,6 +115,10 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
+     * @covers ::exists
+     *
+     * @throws Exception when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
      */
     public function existsShouldThrowAnotherException(): void
     {
@@ -86,6 +134,10 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
+     * @covers ::exists
+     *
+     * @throws Exception when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
      */
     public function existsShouldThrowException(): void
     {

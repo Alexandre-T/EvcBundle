@@ -71,18 +71,31 @@ class EvcService implements EvcServiceInterface
      * @param string $customer the customer id
      *
      * @throws EvcException when an error occured
+     *
+     * @return int
      */
     public function checkAccount(string $customer): int
     {
         // TODO: Implement checkAccount() method.
+        return 0;
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws EvcException when creating personal customer failed.
      */
     public function createPersonalCustomer(string $customer): void
     {
-        // TODO: Implement createPersonalCustomer() method.
+        $params = [
+            'verb' => 'checkevccustomer',
+            'customer' => $customer,
+        ];
+        $response = $this->getRequest($params);
+
+        if ('ok: customer added' !== trim($response->body)) {
+            throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
+        }
     }
 
     /**
@@ -97,17 +110,6 @@ class EvcService implements EvcServiceInterface
             'customer' => $customer,
         ];
         $response = $this->getRequest($params);
-
-        if (200 !== $response->code) {
-            throw new EvcException(sprintf('Evc return a response with code %d', $response->code));
-        }
-
-        //Body of a good request
-        //ok: evc customer exists
-        //Bodies of bad requests
-        //fail: unknown evc customer
-        //fail: no user authorization
-        //fail: no api authorization
 
         if ('ok: evc customer exists' === trim($response->body)) {
             return true;
@@ -126,6 +128,7 @@ class EvcService implements EvcServiceInterface
     public function getPurchases(string $customer, int $days): array
     {
         // TODO: Implement getPurchases() method.
+        return [];
     }
 
     /**
@@ -160,6 +163,10 @@ class EvcService implements EvcServiceInterface
      * Return the result of Request.
      *
      * @param array $params each params is a set of name and value
+     *
+     * @throws EvcException when response code is different from 200
+     *
+     * @return Response
      */
     private function getRequest(array $params): Response
     {
@@ -167,7 +174,13 @@ class EvcService implements EvcServiceInterface
         $params += $this->getParams();
         $request = $this->getUrl();
 
-        return Request::get($request, $headers, $params);
+        $response = Request::get($request, $headers, $params);
+
+        if (200 !== $response->code) {
+            throw new EvcException(sprintf('Evc return a response with code %d', $response->code));
+        }
+
+        return $response;
     }
 
     private function getUrl(): string
