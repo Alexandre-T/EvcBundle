@@ -69,10 +69,27 @@ class EvcService implements EvcServiceInterface
      *
      * @param string $customer the customer id
      * @param int    $credit   the positive or negative number of credits to add (or remove)
+     *
+     * @throws EvcException when an error occured
+     *
+     * @return int the new account balance
      */
-    public function addCredit(string $customer, int $credit): void
+    public function addCredit(string $customer, int $credit): int
     {
-        // TODO: Implement addCredit() method.
+        $params = [
+            'verb' => 'addcustomeraccount',
+            'customer' => $customer,
+            'credits' => $credit,
+        ];
+        $response = $this->getRequest($params);
+
+        $result = preg_match('/^ok:\s([-+]?\d+)/', $response->body, $matches);
+
+        if (1 === $result && 2 === count($matches)) {
+            return (int) $matches[1];
+        }
+
+        throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
     }
 
     /**
