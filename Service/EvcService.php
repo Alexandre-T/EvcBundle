@@ -109,15 +109,15 @@ class EvcService implements EvcServiceInterface
         //fail: no user authorization
         //fail: no api authorization
 
-        if (trim('ok: evc customer exists' === $response->body)) {
+        if ('ok: evc customer exists' === trim($response->body)) {
             return true;
         }
 
-        if (trim('fail: unknown evc customer' === $response->body)) {
+        if ('fail: unknown evc customer' === trim($response->body)) {
             return false;
         }
 
-        throw new EvcException(sprintf('Evc error: %s', $response->body));
+        throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
     }
 
     /**
@@ -134,33 +134,6 @@ class EvcService implements EvcServiceInterface
     public function setCredit(string $customer, int $credit): void
     {
         // TODO: Implement setCredit() method.
-    }
-
-    /**
-     * Create the URL from check evc customer.
-     *
-     * @param string $customer the customer id
-     */
-    private function createCheckEvcCustomer(string $customer): string
-    {
-        return $this->createRequest([
-            'verb' => 'checkevccustomer',
-            'customer' => urlencode($customer),
-        ]);
-    }
-
-    /**
-     * Create the full url for the request.
-     */
-    private function createRequest(array $params): string
-    {
-        $request = "appid={$this->api}&username={$this->username}&password={$this->password}";
-
-        foreach ($params as $key => $parameter) {
-            $request .= '&'.urlencode($key).'='.urlencode($parameter);
-        }
-
-        return $this->url.'?'.$request;
     }
 
     /**

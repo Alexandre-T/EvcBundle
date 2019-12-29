@@ -55,6 +55,7 @@ class EvcServiceTest extends TestCase
         $response = new Response(200, 'fail: unknown evc customer', '', []);
         $request = test::double(Request::class, ['get' => $response]);
         self::assertFalse($this->evcService->exists('33333'));
+        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -80,6 +81,7 @@ class EvcServiceTest extends TestCase
         self::expectExceptionMessage('Evc return a response with code 500');
 
         $this->evcService->exists('33333');
+        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -94,5 +96,6 @@ class EvcServiceTest extends TestCase
         self::expectExceptionMessage('fail: no user authorization');
 
         $this->evcService->exists('33333');
+        $request->verifyInvokedOnce('get');
     }
 }

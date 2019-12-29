@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<ruleset name="Alexandre PHPMD rule set"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                     http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>Alexandre Tranchant rule set.</description>
+    <exclude-pattern>Migrations*Version*.php</exclude-pattern>
+    <!-- Import some rules of clean code rule set -->
+     <rule ref="rulesets/cleancode.xml/BooleanArgumentFlag" />
+    <rule ref="rulesets/cleancode.xml/ElseExpression"/>
+<!--     <rule ref="rulesets/cleancode.xml/StaticAccess" />-->
+    <!-- Import the some rules of code size rule set -->
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity"/>
+    <rule ref="rulesets/codesize.xml/NPathComplexity"/>
+    <rule ref="rulesets/codesize.xml/ExcessiveMethodLength"/>
+     <rule ref="rulesets/codesize.xml/ExcessiveClassLength" />
+    <rule ref="rulesets/codesize.xml/ExcessiveParameterList"/>
+     <rule ref="rulesets/codesize.xml/ExcessivePublicCount" />
+     <rule ref="rulesets/codesize.xml/TooManyFields" />
+    <rule ref="rulesets/codesize.xml/TooManyMethods"/>
+    <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
+        <priority>1</priority>
+        <properties>
+            <property name="maxmethods" value="20"/>
+        </properties>
+    </rule>
+    <!-- <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity" /> -->
+    <!-- Import the entire controversial code rule set -->
+    <rule ref="rulesets/controversial.xml/CamelCaseClassName"/>
+    <rule ref="rulesets/controversial.xml/CamelCasePropertyName"/>
+    <rule ref="rulesets/controversial.xml/CamelCaseMethodName"/>
+    <rule ref="rulesets/controversial.xml/CamelCaseParameterName"/>
+    <rule ref="rulesets/controversial.xml/CamelCaseVariableName"/>
+    <!-- Import the entire design code rule set -->
+    <rule ref="rulesets/design.xml/ExitExpression"/>
+    <rule ref="rulesets/design.xml/EvalExpression"/>
+    <rule ref="rulesets/design.xml/GotoStatement"/>
+    <rule ref="rulesets/design.xml/NumberOfChildren"/>
+    <rule ref="rulesets/design.xml/DepthOfInheritance"/>
+    <rule ref="rulesets/design.xml/DevelopmentCodeFragment"/>
+    <rule ref="rulesets/design.xml/CouplingBetweenObjects">
+        <priority>1</priority>
+        <properties>
+            <property name="maximum" value="30"/>
+        </properties>
+    </rule>
+    <!-- Import the entire unused code rule set -->
+    <rule ref="rulesets/unusedcode.xml">
+        <!-- Avoid unused parameters -->
+        <exclude name="UnusedFormalParameter"/>
+        <exclude name="UnusedPrivateField"/>
+    </rule>
+</ruleset>
