@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
- * @coversDefaultClass \Alexandre\EvcBundle\DependencyInjection\AlexandreEvcExtension
+ * @coversDefaultClass
  *
  * @internal
  */

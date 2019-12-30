@@ -56,7 +56,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::checkAccount
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -71,7 +70,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::checkAccount
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -86,7 +84,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::checkAccount
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -101,7 +98,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::checkAccount
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -120,7 +116,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::addCredit
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -135,7 +130,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::addCredit
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -154,7 +148,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::exists
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -169,7 +162,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::exists
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -184,7 +176,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::exists
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -203,7 +194,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::exists
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -222,14 +212,13 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::getPurchases
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesEmpty(): void
     {
-        $content = file_get_contents(__DIR__.'/../response/empty-purchase.txt');
+        $content = self::getMockedFile('empty-purchase.txt');
         $response = new Response(200, $content, '', []);
         $request = test::double(Request::class, ['get' => $response]);
 
@@ -242,7 +231,40 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesJsonWithNoData(): void
+    {
+        $content = self::getMockedFile('empty-json.txt');
+        $response = new Response(200, $content, '', []);
+        test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: Json from evc.de does not contain data');
+        $this->evcService->getPurchases(10);
+    }
+
+    /**
+     * @test
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesWithNonValidJSON(): void
+    {
+        $content = self::getMockedFile('invalid-json.txt');
+        $response = new Response(200, $content, '', []);
+        test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: Json from evc.de is not a valid JSON');
+        $this->evcService->getPurchases(10);
+    }
+
+    /**
+     * @test
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -259,9 +281,9 @@ class EvcServiceTest extends TestCase
         $request->verifyInvokedOnce('get');
     }
 
+
     /**
      * @test
-     * @covers ::getPurchases
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -276,7 +298,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::getPurchases
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -291,7 +312,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::getPurchases
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -299,7 +319,7 @@ class EvcServiceTest extends TestCase
     public function getPurchasesWithFilter(): void
     {
         $actual = $expected = 33333;
-        $content = file_get_contents(__DIR__.'/../response/get-purchase.txt');
+        $content = self::getMockedFile('get-purchase.txt');
         $response = new Response(200, $content, '', []);
         $request = test::double(Request::class, ['get' => $response]);
 
@@ -315,14 +335,13 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::getPurchases
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesWithoutFilter(): void
     {
-        $content = file_get_contents(__DIR__.'/../response/get-purchase.txt');
+        $content = self::getMockedFile('get-purchase.txt');
         $response = new Response(200, $content, '', []);
         $request = test::double(Request::class, ['get' => $response]);
 
@@ -342,7 +361,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::createPersonalCustomer
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
@@ -358,7 +376,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::createPersonalCustomer
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -377,7 +394,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::setCredit
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should NOT happen
@@ -395,7 +411,6 @@ class EvcServiceTest extends TestCase
 
     /**
      * @test
-     * @covers ::setCredit
      *
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
@@ -410,5 +425,19 @@ class EvcServiceTest extends TestCase
 
         $this->evcService->setCredit(33333, 150);
         $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * Return a file.
+     *
+     * @param string $filename the filename in /Resources/tests subdirectory
+     *
+     * @return false|string
+     */
+    private static function getMockedFile(string $filename)
+    {
+        $filename = basename($filename);
+
+        return file_get_contents(__DIR__.'/../../Resources/tests/'.$filename);
     }
 }

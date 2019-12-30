@@ -13,14 +13,15 @@
     </testsuites>
 
     <!-- Filters -->
-<!--    <filter>-->
-<!--        <whitelist>-->
-<!--            <directory>.</directory>-->
-<!--            <exclude>-->
-<!--                <directory>./Resources</directory>-->
-<!--                <directory>./Tests</directory>-->
-<!--                <directory>./vendor</directory>-->
-<!--            </exclude>-->
-<!--        </whitelist>-->
-<!--    </filter>-->
+    <filter>
+        <whitelist>
+            <directory>.</directory>
+            <exclude>
+                <directory>./build</directory>
+                <directory>./Resources</directory>
+                <directory>./Tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
 </phpunit>

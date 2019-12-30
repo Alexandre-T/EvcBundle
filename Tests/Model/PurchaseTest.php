@@ -30,7 +30,7 @@ use PHPUnit\Framework\TestCase;
 class PurchaseTest extends TestCase
 {
     /**
-     * @covers ::getBuild
+     * test getBuild
      */
     public function testBuild(): void
     {
@@ -40,7 +40,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getCharacteristic
+     * test getCharacteristic
      */
     public function testCharacteristic(): void
     {
@@ -50,7 +50,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getComputer
+     * test getComputer
      */
     public function testComputer(): void
     {
@@ -60,7 +60,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getCustomer
+     * test getCustomer
      */
     public function testCustomer(): void
     {
@@ -71,7 +71,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getDate
+     * test getDate
      */
     public function testDate(): void
     {
@@ -85,7 +85,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getEcuBuild
+     * test getEcuBuild
      */
     public function testEcuBuild(): void
     {
@@ -95,7 +95,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getEcuManufacturer
+     * test getEcuManufacturer
      */
     public function testEcuManufacturer(): void
     {
@@ -105,7 +105,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getEcuNrEcu
+     * test getEcuNrEcu
      */
     public function testEcuNrEcu(): void
     {
@@ -115,7 +115,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getEcuNrProd
+     * test getEcuNrProd
      */
     public function testEcuNrProd(): void
     {
@@ -125,7 +125,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getFilename
+     * test getFilename
      */
     public function testFilename(): void
     {
@@ -135,7 +135,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getIp
+     * test getIp
      */
     public function testIp(): void
     {
@@ -145,7 +145,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getManufacturer
+     * test getManufacturer
      */
     public function testManufacturer(): void
     {
@@ -155,7 +155,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getModel
+     * test getModel
      */
     public function testModel(): void
     {
@@ -165,7 +165,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getOptions
+     * test getOptions
      */
     public function testOptions(): void
     {
@@ -181,7 +181,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getOutput
+     * test getOutput
      */
     public function testOutput(): void
     {
@@ -191,7 +191,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getProject
+     * test getProject
      */
     public function testProject(): void
     {
@@ -201,7 +201,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getSeries
+     * test getSeries
      */
     public function testSeries(): void
     {
@@ -211,7 +211,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getSoftware
+     * test getSoftware
      */
     public function testSoftware(): void
     {
@@ -221,7 +221,7 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * @covers ::getSoftwareVersion
+     * test getSoftwareVersion
      */
     public function testSoftwareVersion(): void
     {

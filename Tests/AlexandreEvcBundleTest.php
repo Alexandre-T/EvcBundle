@@ -29,7 +29,6 @@ class AlexandreEvcBundleTest extends TestCase
 {
     /**
      * @test
-     * @covers ::__construct
      */
     public function couldBeConstructedWithoutAnyArguments(): void
     {

@@ -261,7 +261,7 @@ class EvcService implements EvcServiceInterface
         }
 
         if (!isset($json['data']) || !is_array($json['data'])) {
-            throw new EvcException(sprintf('Evc error: Json from evc.de does not contains data'));
+            throw new EvcException(sprintf('Evc error: Json from evc.de does not contain data'));
         }
     }
 

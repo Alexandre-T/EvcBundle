@@ -57,8 +57,6 @@ class ConfigurationTest extends TestCase
 
     /**
      * Test that an empty api_id is throwing exception.
-     *
-     * @covers ::getConfigTreeBuilder
      */
     public function testEmptyApiId(): void
     {
@@ -73,8 +71,6 @@ class ConfigurationTest extends TestCase
 
     /**
      * Test that an empty password is throwing exception.
-     *
-     * @covers ::getConfigTreeBuilder
      */
     public function testEmptyPassword(): void
     {
@@ -91,8 +87,6 @@ class ConfigurationTest extends TestCase
 
     /**
      * Test that an empty username is throwing exception.
-     *
-     * @covers ::getConfigTreeBuilder
      */
     public function testEmptyUsername(): void
     {
@@ -107,7 +101,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @covers ::getConfigTreeBuilder
+     * Test configuration
      */
     public function testGetConfigTreeBuilder(): void
     {
@@ -123,7 +117,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @covers ::getConfigTreeBuilder
+     * Test configuration with wrong keys
      */
     public function testGetConfigWithWrongKey(): void
     {
