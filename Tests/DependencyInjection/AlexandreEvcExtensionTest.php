@@ -21,7 +21,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * @coversDefaultClass
@@ -89,13 +88,9 @@ class AlexandreEvcExtensionTest extends TestCase
     public function testNonValidConfiguration(): void
     {
         $container = $this->getContainer();
-        $message = 'Unrecognized option "url" under "alexandre_evc". Available options are "api_id", "password", "username".';
-        if (version_compare(Kernel::VERSION, '4.0.0') == -1) {
-            $message = 'Unrecognized option "url" under "alexandre_evc"';
-        }
 
         self::expectException(InvalidConfigurationException::class);
-        self::expectExceptionMessage($message);
+        self::expectExceptionMessage('Unrecognized option "url" under "alexandre_evc"');
 
         $this->evcExtension->load([
             'alexandre_evc' => [

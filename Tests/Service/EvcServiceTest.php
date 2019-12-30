@@ -55,6 +55,20 @@ class EvcServiceTest extends TestCase
     }
 
     /**
+     * Return a file.
+     *
+     * @param string $filename the filename in /Resources/tests subdirectory
+     *
+     * @return false|string
+     */
+    private static function getMockedFile(string $filename)
+    {
+        $filename = basename($filename);
+
+        return file_get_contents(__DIR__.'/../../Resources/tests/'.$filename);
+    }
+
+    /**
      * @test
      *
      * @throws Exception    when Aspect Mock is not well initialized
@@ -235,40 +249,6 @@ class EvcServiceTest extends TestCase
      * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
-    public function getPurchasesJsonWithNoData(): void
-    {
-        $content = self::getMockedFile('empty-json.txt');
-        $response = new Response(200, $content, '', []);
-        test::double(Request::class, ['get' => $response]);
-
-        self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: Json from evc.de does not contain data');
-        $this->evcService->getPurchases(10);
-    }
-
-    /**
-     * @test
-     *
-     * @throws Exception    when Aspect Mock is not well initialized
-     * @throws EvcException this should happen
-     */
-    public function getPurchasesWithNonValidJSON(): void
-    {
-        $content = self::getMockedFile('invalid-json.txt');
-        $response = new Response(200, $content, '', []);
-        test::double(Request::class, ['get' => $response]);
-
-        self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: Json from evc.de is not a valid JSON');
-        $this->evcService->getPurchases(10);
-    }
-
-    /**
-     * @test
-     *
-     * @throws Exception    when Aspect Mock is not well initialized
-     * @throws EvcException this should happen
-     */
     public function getPurchasesFailed(): void
     {
         $response = new Response(200, 'fail: foo bar', '', []);
@@ -280,7 +260,6 @@ class EvcServiceTest extends TestCase
         $this->evcService->getPurchases(10);
         $request->verifyInvokedOnce('get');
     }
-
 
     /**
      * @test
@@ -314,6 +293,23 @@ class EvcServiceTest extends TestCase
      * @test
      *
      * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesJsonWithNoData(): void
+    {
+        $content = self::getMockedFile('empty-json.txt');
+        $response = new Response(200, $content, '', []);
+        test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: Json from evc.de does not contain data');
+        $this->evcService->getPurchases(10);
+    }
+
+    /**
+     * @test
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesWithFilter(): void
@@ -331,6 +327,23 @@ class EvcServiceTest extends TestCase
         self::assertInstanceOf(Purchase::class, $purchases[0]);
 
         self::assertEquals($expected, $purchases[0]->getCustomer());
+    }
+
+    /**
+     * @test
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesWithNonValidJson(): void
+    {
+        $content = self::getMockedFile('invalid-json.txt');
+        $response = new Response(200, $content, '', []);
+        test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: Json from evc.de is not a valid JSON');
+        $this->evcService->getPurchases(10);
     }
 
     /**
@@ -425,19 +438,5 @@ class EvcServiceTest extends TestCase
 
         $this->evcService->setCredit(33333, 150);
         $request->verifyInvokedOnce('get');
-    }
-
-    /**
-     * Return a file.
-     *
-     * @param string $filename the filename in /Resources/tests subdirectory
-     *
-     * @return false|string
-     */
-    private static function getMockedFile(string $filename)
-    {
-        $filename = basename($filename);
-
-        return file_get_contents(__DIR__.'/../../Resources/tests/'.$filename);
     }
 }

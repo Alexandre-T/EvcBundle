@@ -28,6 +28,8 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
+     * @SuppressWarnings(PHPMD.ElseExpression)
+     *
      * @return TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()

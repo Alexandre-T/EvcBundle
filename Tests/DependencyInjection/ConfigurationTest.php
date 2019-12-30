@@ -101,7 +101,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * Test configuration
+     * Test configuration.
      */
     public function testGetConfigTreeBuilder(): void
     {
@@ -117,7 +117,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * Test configuration with wrong keys
+     * Test configuration with wrong keys.
      */
     public function testGetConfigWithWrongKey(): void
     {
