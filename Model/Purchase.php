@@ -20,8 +20,40 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 
+/**
+ * Class Purchase is defined by the API evc.de.
+ */
 class Purchase
 {
+    public const PROPERTIES = [
+        'Build' => 'build',
+        'Characteristic' => 'characteristic',
+        'ComputerName' => 'computer',
+        'Ecu Build' => 'ecuBuild',
+        'Ecu Manufacturer' => 'ecuManufacturer',
+        'ECU_Nr_ECU' => 'ecuNrEcu',
+        'ECU_Nr_Prod' => 'ecuNrProd',
+        'Filename' => 'filename',
+        'IP' => 'ip',
+        'Manufacturer' => 'manufacturer',
+        'Model' => 'model',
+        'Output' => 'output',
+        'Project type' => 'project',
+        'Series' => 'series',
+        'Software' => 'software',
+        'SoftwareVersion' => 'softwareVersion',
+    ];
+
+    /**
+     * @var string
+     */
+    private $build;
+
+    /**
+     * @var string
+     */
+    private $characteristic;
+
     /**
      * The customer name.
      *
@@ -44,6 +76,31 @@ class Purchase
     private $customer;
 
     /**
+     * @var DateTimeImmutable|null
+     */
+    private $date;
+
+    /**
+     * @var string
+     */
+    private $ecuBuild;
+
+    /**
+     * @var string
+     */
+    private $ecuManufacturer;
+
+    /**
+     * @var string
+     */
+    private $ecuNrEcu;
+
+    /**
+     * @var string
+     */
+    private $ecuNrProd;
+
+    /**
      * The filename subscribed.
      *
      * @var string
@@ -58,16 +115,6 @@ class Purchase
     private $ip;
 
     /**
-     * @var array
-     */
-    private $options = [];
-
-    /**
-     * @var null|DateTimeImmutable
-     */
-    private $date;
-
-    /**
      * @var string
      */
     private $manufacturer;
@@ -75,22 +122,12 @@ class Purchase
     /**
      * @var string
      */
-    private $series;
-
-    /**
-     * @var string
-     */
-    private $build;
-
-    /**
-     * @var string
-     */
     private $model;
 
     /**
-     * @var string
+     * @var array
      */
-    private $characteristic;
+    private $options = [];
 
     /**
      * @var string
@@ -105,22 +142,7 @@ class Purchase
     /**
      * @var string
      */
-    private $ecuManufacturer;
-
-    /**
-     * @var string
-     */
-    private $ecuBuild;
-
-    /**
-     * @var string
-     */
-    private $ecuNrEcu;
-
-    /**
-     * @var string
-     */
-    private $ecuNrProd;
+    private $series;
 
     /**
      * @var string
@@ -132,20 +154,21 @@ class Purchase
      */
     private $softwareVersion;
 
-    public function __construct(array $data = []){
+    /**
+     * Purchase constructor.
+     *
+     * @param array $data data to construct Purchase
+     */
+    public function __construct(array $data = [])
+    {
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'Customer':
                     $this->customer = (int) $value;
                     break;
-                case 'Filename':
-                    $this->filename = $value;
-                    break;
-                case 'ComputerName':
-                    $this->computer = $value;
-                    break;
-                case 'IP':
-                    $this->ip = $value;
+                case $this->hasProperty($key):
+                    $column = $this->getColumn($key);
+                    $this->{$column} = $value;
                     break;
                 case 'Date':
                     try {
@@ -154,50 +177,30 @@ class Purchase
                         $this->date = null;
                     }
                     break;
-                case 'Manufacturer':
-                    $this->manufacturer = $value;
-                    break;
-                case 'Series':
-                    $this->series = $value;
-                    break;
-                case 'Build':
-                    $this->build = $value;
-                    break;
-                case 'Model':
-                    $this->model = $value;
-                    break;
-                case 'Characteristic':
-                    $this->characteristic = $value;
-                    break;
-                case 'Output':
-                    $this->output = $value;
-                    break;
-                case 'Project type':
-                    $this->project = $value;
-                    break;
-                case 'Ecu Manufacturer':
-                    $this->ecuManufacturer = $value;
-                    break;
-                case 'Ecu Build':
-                    $this->ecuBuild = $value;
-                    break;
-                case 'ECU_Nr_ECU':
-                    $this->ecuNrEcu = $value;
-                    break;
-                case 'ECU_Nr_Prod':
-                    $this->ecuNrProd = $value;
-                    break;
-                case 'Software':
-                    $this->software = $value;
-                    break;
-                case 'SoftwareVersion':
-                    $this->softwareVersion = $value;
-                    break;
                 default:
                     $this->options[$key] = $value;
-                    break;
             }
         }
+    }
+
+    /**
+     * Build getter.
+     *
+     * @return string
+     */
+    public function getBuild(): ?string
+    {
+        return $this->build;
+    }
+
+    /**
+     * Characteristic getter.
+     *
+     * @return string
+     */
+    public function getCharacteristic(): ?string
+    {
+        return $this->characteristic;
     }
 
     /**
@@ -225,119 +228,11 @@ class Purchase
     }
 
     /**
-     * Filename getter.
-     */
-    public function getFilename(): ?string
-    {
-        return $this->filename;
-    }
-
-    /**
-     * IP getter.
-     */
-    public function getIp(): ?string
-    {
-        return $this->ip;
-    }
-
-    /**
-     * Return new columns provided by API.
-     * 
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return $this->options;
-    }
-
-    /**
      * Date getter.
-     * 
-     * @return DateTimeImmutable|null
      */
     public function getDate(): ?DateTimeImmutable
     {
         return $this->date;
-    }
-
-    /**
-     * Manufacturer getter.
-     *
-     * @return string
-     */
-    public function getManufacturer(): ?string
-    {
-        return $this->manufacturer;
-    }
-
-    /**
-     * Series getter.
-     *
-     * @return string
-     */
-    public function getSeries(): ?string
-    {
-        return $this->series;
-    }
-
-    /**
-     * Build getter.
-     *
-     * @return string
-     */
-    public function getBuild(): ?string
-    {
-        return $this->build;
-    }
-
-    /**
-     * Model getter.
-     *
-     * @return string
-     */
-    public function getModel(): ?string
-    {
-        return $this->model;
-    }
-
-    /**
-     * Characteristic getter.
-     *
-     * @return string
-     */
-    public function getCharacteristic(): ?string
-    {
-        return $this->characteristic;
-    }
-
-    /**
-     * Output getter.
-     *
-     * @return string
-     */
-    public function getOutput(): ?string
-    {
-        return $this->output;
-    }
-
-    /**
-     * Project getter.
-     *
-     * @return string
-     */
-    public function getProject(): ?string
-    {
-        return $this->project;
-    }
-
-    /**
-     * Ecu manufacturer getter.
-     *
-     * @return string
-     */
-    public function getEcuManufacturer(): ?string
-    {
-        return $this->ecuManufacturer;
     }
 
     /**
@@ -348,6 +243,16 @@ class Purchase
     public function getEcuBuild(): ?string
     {
         return $this->ecuBuild;
+    }
+
+    /**
+     * Ecu manufacturer getter.
+     *
+     * @return string
+     */
+    public function getEcuManufacturer(): ?string
+    {
+        return $this->ecuManufacturer;
     }
 
     /**
@@ -371,6 +276,80 @@ class Purchase
     }
 
     /**
+     * Filename getter.
+     */
+    public function getFilename(): ?string
+    {
+        return $this->filename;
+    }
+
+    /**
+     * IP getter.
+     */
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    /**
+     * Manufacturer getter.
+     *
+     * @return string
+     */
+    public function getManufacturer(): ?string
+    {
+        return $this->manufacturer;
+    }
+
+    /**
+     * Model getter.
+     *
+     * @return string
+     */
+    public function getModel(): ?string
+    {
+        return $this->model;
+    }
+
+    /**
+     * Return new columns provided by API.
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * Output getter.
+     *
+     * @return string
+     */
+    public function getOutput(): ?string
+    {
+        return $this->output;
+    }
+
+    /**
+     * Project getter.
+     *
+     * @return string
+     */
+    public function getProject(): ?string
+    {
+        return $this->project;
+    }
+
+    /**
+     * Series getter.
+     *
+     * @return string
+     */
+    public function getSeries(): ?string
+    {
+        return $this->series;
+    }
+
+    /**
      * Software getter.
      *
      * @return string
@@ -388,5 +367,25 @@ class Purchase
     public function getSoftwareVersion(): ?string
     {
         return $this->softwareVersion;
+    }
+
+    /**
+     * Get the property corresponding to the associated field.
+     *
+     * @param string $field the associated field
+     */
+    private function getColumn(string $field)
+    {
+        return self::PROPERTIES[$field];
+    }
+
+    /**
+     * Is there a property matching the associated field?
+     *
+     * @param string $field the associated field
+     */
+    private function hasProperty(string $field)
+    {
+        return array_key_exists($field, self::PROPERTIES);
     }
 }

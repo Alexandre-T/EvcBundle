@@ -18,6 +18,9 @@ namespace Alexandre\Evc\Service;
 
 use Alexandre\Evc\Model\Purchase;
 
+/**
+ * Interface Evc Service defines methods to request an api as evc.de.
+ */
 interface EvcServiceInterface
 {
     /**
@@ -29,7 +32,7 @@ interface EvcServiceInterface
      * The "credits" value can be negative, so you can subtract with this command as well.
      *
      * @param int $customer the customer id
-     * @param int    $credit   the positive or negative number of credits to add (or remove)
+     * @param int $credit   the positive or negative number of credits to add (or remove)
      */
     public function addCredit(int $customer, int $credit);
 
@@ -58,7 +61,6 @@ interface EvcServiceInterface
      * @param int $customer the customer id
      */
     public function exists(int $customer): bool;
-
 
     /**
      * Returns a collection of the purchases performed in the last X (up to 99) days.

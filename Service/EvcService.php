@@ -21,8 +21,14 @@ use Alexandre\Evc\Model\Purchase;
 use Unirest\Request;
 use Unirest\Response;
 
+/**
+ * Class Evc Service is requesting the API evc.de and analyses responses.
+ */
 class EvcService implements EvcServiceInterface
 {
+    public const DAYS_MAX = 99;
+    public const DAYS_MIN = 1;
+
     /**
      * @var string
      */
@@ -68,9 +74,9 @@ class EvcService implements EvcServiceInterface
      * The "credits" value can be negative, so you can subtract with this command as well.
      *
      * @param int $customer the customer id
-     * @param int    $credit   the positive or negative number of credits to add (or remove)
+     * @param int $credit   the positive or negative number of credits to add (or remove)
      *
-     * @throws EvcException when an error occured
+     * @throws EvcException when an error occurred
      *
      * @return int the new account balance
      */
@@ -85,11 +91,9 @@ class EvcService implements EvcServiceInterface
 
         $result = preg_match('/^ok:\s([-+]?\d+)/', $response->body, $matches);
 
-        if (1 === $result && 2 === count($matches)) {
-            return (int) $matches[1];
-        }
+        $this->checkResult($result, $matches, $response->body);
 
-        throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
+        return (int) $matches[1];
     }
 
     /**
@@ -97,7 +101,7 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when an error occured
+     * @throws EvcException when an error occurred
      */
     public function checkAccount(int $customer): int
     {
@@ -109,11 +113,9 @@ class EvcService implements EvcServiceInterface
 
         $result = preg_match('/^ok:\s([-+]?\d+)/', $response->body, $matches);
 
-        if (1 === $result && 2 === count($matches)) {
-            return (int) $matches[1];
-        }
+        $this->checkResult($result, $matches, $response->body);
 
-        throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
+        return (int) $matches[1];
     }
 
     /**
@@ -146,7 +148,7 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when an error occured when accessing EVC API
+     * @throws EvcException when an error occurred when accessing EVC API
      */
     public function exists(int $customer): bool
     {
@@ -170,18 +172,16 @@ class EvcService implements EvcServiceInterface
     /**
      * Returns a collection of the purchases performed in the last X (up to 99) days.
      *
-     * @param int      $days the number of
+     * @param int      $days     the number of
      * @param int|null $customer filter purchases on specified customer id
      *
-     * @return Purchase[]
-     *
      * @throws EvcException when an error occurred when requesting EVC
+     *
+     * @return Purchase[]
      */
     public function getPurchases(int $days = 99, int $customer = null): array
     {
-        if ($days > 99) {
-            throw new EvcException('Evc error: days shall be lesser or equal than 99');
-        }
+        $this->checkDays($days);
 
         $params = [
             'verb' => 'checkevccustomer',
@@ -191,24 +191,16 @@ class EvcService implements EvcServiceInterface
 
         $result = preg_match('/^ok:\sJSON\sfollows\s([\S\s]+)/', $response->body, $matches);
 
-        if (1 !== $result || !is_array($matches) || 2 !== count($matches)) {
-            throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
-        }
+        $this->checkResult($result, $matches, $response->body);
 
         $json = json_decode($matches[1], true);
 
-        if (!is_array($json)) {
-            throw new EvcException(sprintf('Evc error: Json from evc.de is not a valid JSON'));
-        }
-
-        if (!isset($json['data']) || !is_array($json['data'])) {
-            throw new EvcException(sprintf('Evc error: Json from evc.de does not contains data'));
-        }
+        $this->checkJson($json);
 
         $result = [];
         foreach ($json['data'] as $data) {
             $purchase = new Purchase($data);
-            if (null === $customer || $purchase->getCustomer() === $customer){
+            if (null === $customer || $purchase->getCustomer() === $customer) {
                 $result[] = $purchase;
             }
         }
@@ -223,11 +215,59 @@ class EvcService implements EvcServiceInterface
      * causing a wrong balance.
      *
      * @param int $customer the customer id
-     * @param int    $credit   the new account balance
+     * @param int $credit   the new account balance
      */
     public function setCredit(int $customer, int $credit): void
     {
         // TODO: Implement setCredit() method.
+    }
+
+    /**
+     * Check that days are between minimum and maximum.
+     *
+     * @param int $days the number provided
+     *
+     * @throws EvcException when days are not in range
+     */
+    private function checkDays(int $days): void
+    {
+        if ($days < self::DAYS_MIN || $days > self::DAYS_MAX) {
+            throw new EvcException('Evc error: days shall be between 1 and 99');
+        }
+    }
+
+    /**
+     * Check that the json file is valid.
+     *
+     * @param string $json provided by preg_match function
+     *
+     * @throws EvcException when json is not valid
+     */
+    private function checkJson($json): void
+    {
+        if (!is_array($json)) {
+            throw new EvcException(sprintf('Evc error: Json from evc.de is not a valid JSON'));
+        }
+
+        if (!isset($json['data']) || !is_array($json['data'])) {
+            throw new EvcException(sprintf('Evc error: Json from evc.de does not contains data'));
+        }
+    }
+
+    /**
+     * Check result of preg_match function.
+     *
+     * @param int    $result  result of preg_match function
+     * @param array  $matches matches created by preg_match function
+     * @param string $body    body of request
+     *
+     * @throws EvcException when the result of preg_match is not valid
+     */
+    private function checkResult(int $result, $matches, string $body): void
+    {
+        if (1 !== $result || !is_array($matches) || 2 !== count($matches)) {
+            throw new EvcException(sprintf('Evc error: %s', trim($body)));
+        }
     }
 
     /**

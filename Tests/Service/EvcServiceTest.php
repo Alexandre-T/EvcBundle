@@ -229,7 +229,7 @@ class EvcServiceTest extends TestCase
      */
     public function getPurchasesEmpty(): void
     {
-        $content = file_get_contents(__DIR__ . '/../response/empty-purchase.txt');
+        $content = file_get_contents(__DIR__.'/../response/empty-purchase.txt');
         $response = new Response(200, $content, '', []);
         $request = test::double(Request::class, ['get' => $response]);
 
@@ -238,57 +238,6 @@ class EvcServiceTest extends TestCase
 
         self::assertIsArray($purchases);
         self::assertCount(0, $purchases);
-    }
-
-    /**
-     * @test
-     * @covers ::getPurchases
-     *
-     * @throws Exception    when Aspect Mock is not well initialized
-     * @throws EvcException this should not happen
-     */
-    public function getPurchasesWithoutFilter(): void
-    {
-        $content = file_get_contents(__DIR__ . '/../response/get-purchase.txt');
-        $response = new Response(200, $content, '', []);
-        $request = test::double(Request::class, ['get' => $response]);
-
-        $purchases = $this->evcService->getPurchases(10);
-        $request->verifyInvokedOnce('get');
-
-        self::assertIsArray($purchases);
-        self::assertCount(2, $purchases);
-        foreach ($purchases as $purchase) {
-            self::assertInstanceOf(Purchase::class, $purchase);
-            self::assertIsArray($purchase->getOptions());
-            self::assertEmpty($purchase->getOptions());
-        }
-
-        self::assertNotEquals($purchases[0]->getCustomer(), $purchases[1]->getCustomer());
-    }
-
-    /**
-     * @test
-     * @covers ::getPurchases
-     *
-     * @throws Exception    when Aspect Mock is not well initialized
-     * @throws EvcException this should not happen
-     */
-    public function getPurchasesWithFilter(): void
-    {
-        $actual = $expected = 33333;
-        $content = file_get_contents(__DIR__ . '/../response/get-purchase.txt');
-        $response = new Response(200, $content, '', []);
-        $request = test::double(Request::class, ['get' => $response]);
-
-        $purchases = $this->evcService->getPurchases(10, $actual);
-        $request->verifyInvokedOnce('get');
-
-        self::assertIsArray($purchases);
-        self::assertCount(1, $purchases);
-        self::assertInstanceOf(Purchase::class, $purchases[0]);
-
-        self::assertEquals($expected, $purchases[0]->getCustomer());
     }
 
     /**
@@ -320,9 +269,75 @@ class EvcServiceTest extends TestCase
     public function getPurchasesFailedWhenDaysAreTooGreat(): void
     {
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: days shall be lesser or equal than 99');
+        self::expectExceptionMessage('Evc error: days shall be between 1 and 99');
 
         $this->evcService->getPurchases(150);
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesFailedWhenDaysAreTooSmall(): void
+    {
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: days shall be between 1 and 99');
+
+        $this->evcService->getPurchases(0);
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function getPurchasesWithFilter(): void
+    {
+        $actual = $expected = 33333;
+        $content = file_get_contents(__DIR__.'/../response/get-purchase.txt');
+        $response = new Response(200, $content, '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        $purchases = $this->evcService->getPurchases(10, $actual);
+        $request->verifyInvokedOnce('get');
+
+        self::assertIsArray($purchases);
+        self::assertCount(1, $purchases);
+        self::assertInstanceOf(Purchase::class, $purchases[0]);
+
+        self::assertEquals($expected, $purchases[0]->getCustomer());
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function getPurchasesWithoutFilter(): void
+    {
+        $content = file_get_contents(__DIR__.'/../response/get-purchase.txt');
+        $response = new Response(200, $content, '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        $purchases = $this->evcService->getPurchases(10);
+        $request->verifyInvokedOnce('get');
+
+        self::assertIsArray($purchases);
+        self::assertCount(2, $purchases);
+        foreach ($purchases as $purchase) {
+            self::assertInstanceOf(Purchase::class, $purchase);
+            self::assertIsArray($purchase->getOptions());
+            self::assertEmpty($purchase->getOptions());
+        }
+
+        self::assertNotEquals($purchases[0]->getCustomer(), $purchases[1]->getCustomer());
     }
 
     /**
