@@ -67,14 +67,14 @@ class EvcService implements EvcServiceInterface
      *
      * The "credits" value can be negative, so you can subtract with this command as well.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      * @param int    $credit   the positive or negative number of credits to add (or remove)
      *
      * @throws EvcException when an error occured
      *
      * @return int the new account balance
      */
-    public function addCredit(string $customer, int $credit): int
+    public function addCredit(int $customer, int $credit): int
     {
         $params = [
             'verb' => 'addcustomeraccount',
@@ -95,11 +95,11 @@ class EvcService implements EvcServiceInterface
     /**
      * Check a personal account balance.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      *
      * @throws EvcException when an error occured
      */
-    public function checkAccount(string $customer): int
+    public function checkAccount(int $customer): int
     {
         $params = [
             'verb' => 'getcustomeraccount',
@@ -122,11 +122,11 @@ class EvcService implements EvcServiceInterface
      * A personal customer must already as EVC customer. Making him a personal customer allows him to see your reseller
      * files and creates a personal account balance relationship with you. Only add customers who asked for this.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      *
      * @throws EvcException when creating personal customer failed
      */
-    public function createPersonalCustomer(string $customer): void
+    public function createPersonalCustomer(int $customer): void
     {
         $params = [
             'verb' => 'checkevccustomer',
@@ -144,11 +144,11 @@ class EvcService implements EvcServiceInterface
      *
      * Note: This doesn't check if this is a personal customer of you. It checks the EVC customer base.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      *
      * @throws EvcException when an error occured when accessing EVC API
      */
-    public function exists(string $customer): bool
+    public function exists(int $customer): bool
     {
         $params = [
             'verb' => 'checkevccustomer',
@@ -170,15 +170,50 @@ class EvcService implements EvcServiceInterface
     /**
      * Returns a collection of the purchases performed in the last X (up to 99) days.
      *
-     * @param string $customer the customer id
-     * @param int    $days     the number of
+     * @param int      $days the number of
+     * @param int|null $customer filter purchases on specified customer id
      *
      * @return Purchase[]
+     *
+     * @throws EvcException when an error occurred when requesting EVC
      */
-    public function getPurchases(string $customer, int $days): array
+    public function getPurchases(int $days = 99, int $customer = null): array
     {
-        // TODO: Implement getPurchases() method.
-        return [];
+        if ($days > 99) {
+            throw new EvcException('Evc error: days shall be lesser or equal than 99');
+        }
+
+        $params = [
+            'verb' => 'checkevccustomer',
+            'customer' => $customer,
+        ];
+        $response = $this->getRequest($params);
+
+        $result = preg_match('/^ok:\sJSON\sfollows\s([\S\s]+)/', $response->body, $matches);
+
+        if (1 !== $result || !is_array($matches) || 2 !== count($matches)) {
+            throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
+        }
+
+        $json = json_decode($matches[1], true);
+
+        if (!is_array($json)) {
+            throw new EvcException(sprintf('Evc error: Json from evc.de is not a valid JSON'));
+        }
+
+        if (!isset($json['data']) || !is_array($json['data'])) {
+            throw new EvcException(sprintf('Evc error: Json from evc.de does not contains data'));
+        }
+
+        $result = [];
+        foreach ($json['data'] as $data) {
+            $purchase = new Purchase($data);
+            if (null === $customer || $purchase->getCustomer() === $customer){
+                $result[] = $purchase;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -187,10 +222,10 @@ class EvcService implements EvcServiceInterface
      * This is not recommended for adding/removing points because the customer might purchase at the same time,
      * causing a wrong balance.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      * @param int    $credit   the new account balance
      */
-    public function setCredit(string $customer, int $credit): void
+    public function setCredit(int $customer, int $credit): void
     {
         // TODO: Implement setCredit() method.
     }

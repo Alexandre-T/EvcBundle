@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Alexandre\Evc\Tests\Service;
 
 use Alexandre\Evc\Exception\EvcException;
+use Alexandre\Evc\Model\Purchase;
 use Alexandre\Evc\Service\EvcService;
 use AspectMock\Test as test;
 use Exception;
@@ -64,7 +65,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'ok: 9876543210', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        self::assertEquals(9876543210, $this->evcService->checkAccount('33333'));
+        self::assertEquals(9876543210, $this->evcService->checkAccount(33333));
         $request->verifyInvokedOnce('get');
     }
 
@@ -79,7 +80,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'ok: -8', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        self::assertEquals(-8, $this->evcService->checkAccount('33333'));
+        self::assertEquals(-8, $this->evcService->checkAccount(33333));
         $request->verifyInvokedOnce('get');
     }
 
@@ -94,7 +95,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'ok: 0', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        self::assertEquals(0, $this->evcService->checkAccount('33333'));
+        self::assertEquals(0, $this->evcService->checkAccount(33333));
         $request->verifyInvokedOnce('get');
     }
 
@@ -113,7 +114,7 @@ class EvcServiceTest extends TestCase
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
 
-        $this->evcService->checkAccount('33333');
+        $this->evcService->checkAccount(33333);
         $request->verifyInvokedOnce('get');
     }
 
@@ -128,7 +129,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'ok: 123', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        self::assertEquals(123, $this->evcService->addCredit('33333', 78));
+        self::assertEquals(123, $this->evcService->addCredit(33333, 78));
         $request->verifyInvokedOnce('get');
     }
 
@@ -147,7 +148,7 @@ class EvcServiceTest extends TestCase
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: ok: foobar');
 
-        self::assertEquals(123, $this->evcService->addCredit('33333', 78));
+        self::assertEquals(123, $this->evcService->addCredit(33333, 78));
         $request->verifyInvokedOnce('get');
     }
 
@@ -162,7 +163,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'fail: unknown evc customer', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        self::assertFalse($this->evcService->exists('33333'));
+        self::assertFalse($this->evcService->exists(33333));
         $request->verifyInvokedOnce('get');
     }
 
@@ -177,7 +178,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'ok: evc customer exists', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        self::assertTrue($this->evcService->exists('33333'));
+        self::assertTrue($this->evcService->exists(33333));
         $request->verifyInvoked('get');
     }
 
@@ -196,7 +197,7 @@ class EvcServiceTest extends TestCase
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc return a response with code 500');
 
-        $this->evcService->exists('33333');
+        $this->evcService->exists(33333);
         $request->verifyInvokedOnce('get');
     }
 
@@ -215,8 +216,113 @@ class EvcServiceTest extends TestCase
         self::expectException(EvcException::class);
         self::expectExceptionMessage('fail: no user authorization');
 
-        $this->evcService->exists('33333');
+        $this->evcService->exists(33333);
         $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function getPurchasesEmpty(): void
+    {
+        $content = file_get_contents(__DIR__ . '/../response/empty-purchase.txt');
+        $response = new Response(200, $content, '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        $purchases = $this->evcService->getPurchases(10);
+        $request->verifyInvokedOnce('get');
+
+        self::assertIsArray($purchases);
+        self::assertCount(0, $purchases);
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function getPurchasesWithoutFilter(): void
+    {
+        $content = file_get_contents(__DIR__ . '/../response/get-purchase.txt');
+        $response = new Response(200, $content, '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        $purchases = $this->evcService->getPurchases(10);
+        $request->verifyInvokedOnce('get');
+
+        self::assertIsArray($purchases);
+        self::assertCount(2, $purchases);
+        foreach ($purchases as $purchase) {
+            self::assertInstanceOf(Purchase::class, $purchase);
+            self::assertIsArray($purchase->getOptions());
+            self::assertEmpty($purchase->getOptions());
+        }
+
+        self::assertNotEquals($purchases[0]->getCustomer(), $purchases[1]->getCustomer());
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should not happen
+     */
+    public function getPurchasesWithFilter(): void
+    {
+        $actual = $expected = 33333;
+        $content = file_get_contents(__DIR__ . '/../response/get-purchase.txt');
+        $response = new Response(200, $content, '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        $purchases = $this->evcService->getPurchases(10, $actual);
+        $request->verifyInvokedOnce('get');
+
+        self::assertIsArray($purchases);
+        self::assertCount(1, $purchases);
+        self::assertInstanceOf(Purchase::class, $purchases[0]);
+
+        self::assertEquals($expected, $purchases[0]->getCustomer());
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesFailed(): void
+    {
+        $response = new Response(200, 'fail: foo bar', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: fail: foo bar');
+
+        $this->evcService->getPurchases(10);
+        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     * @covers ::getPurchases
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function getPurchasesFailedWhenDaysAreTooGreat(): void
+    {
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: days shall be lesser or equal than 99');
+
+        $this->evcService->getPurchases(150);
     }
 
     /**
@@ -230,7 +336,7 @@ class EvcServiceTest extends TestCase
     {
         $response = new Response(200, 'ok: customer added', '', []);
         $request = test::double(Request::class, ['get' => $response]);
-        $this->evcService->createPersonalCustomer('33333');
+        $this->evcService->createPersonalCustomer(33333);
         $request->verifyInvokedOnce('get');
         self::assertTrue(true); // Mark test as done.
     }
@@ -250,7 +356,7 @@ class EvcServiceTest extends TestCase
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: fail: customer already exists');
 
-        $this->evcService->createPersonalCustomer('33333');
+        $this->evcService->createPersonalCustomer(33333);
         $request->verifyInvokedOnce('get');
     }
 }

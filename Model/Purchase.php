@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Alexandre\Evc\Model;
 
+use DateTimeImmutable;
 use DateTimeInterface;
+use Exception;
 
 class Purchase
 {
@@ -37,7 +39,7 @@ class Purchase
     /**
      * The customer id.
      *
-     * @var string
+     * @var int
      */
     private $customer;
 
@@ -56,9 +58,152 @@ class Purchase
     private $ip;
 
     /**
+     * @var array
+     */
+    private $options = [];
+
+    /**
+     * @var null|DateTimeImmutable
+     */
+    private $date;
+
+    /**
+     * @var string
+     */
+    private $manufacturer;
+
+    /**
+     * @var string
+     */
+    private $series;
+
+    /**
+     * @var string
+     */
+    private $build;
+
+    /**
+     * @var string
+     */
+    private $model;
+
+    /**
+     * @var string
+     */
+    private $characteristic;
+
+    /**
+     * @var string
+     */
+    private $output;
+
+    /**
+     * @var string
+     */
+    private $project;
+
+    /**
+     * @var string
+     */
+    private $ecuManufacturer;
+
+    /**
+     * @var string
+     */
+    private $ecuBuild;
+
+    /**
+     * @var string
+     */
+    private $ecuNrEcu;
+
+    /**
+     * @var string
+     */
+    private $ecuNrProd;
+
+    /**
+     * @var string
+     */
+    private $software;
+
+    /**
+     * @var string
+     */
+    private $softwareVersion;
+
+    public function __construct(array $data = []){
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case 'Customer':
+                    $this->customer = (int) $value;
+                    break;
+                case 'Filename':
+                    $this->filename = $value;
+                    break;
+                case 'ComputerName':
+                    $this->computer = $value;
+                    break;
+                case 'IP':
+                    $this->ip = $value;
+                    break;
+                case 'Date':
+                    try {
+                        $this->date = new DateTimeImmutable($value);
+                    } catch (Exception $e) {
+                        $this->date = null;
+                    }
+                    break;
+                case 'Manufacturer':
+                    $this->manufacturer = $value;
+                    break;
+                case 'Series':
+                    $this->series = $value;
+                    break;
+                case 'Build':
+                    $this->build = $value;
+                    break;
+                case 'Model':
+                    $this->model = $value;
+                    break;
+                case 'Characteristic':
+                    $this->characteristic = $value;
+                    break;
+                case 'Output':
+                    $this->output = $value;
+                    break;
+                case 'Project type':
+                    $this->project = $value;
+                    break;
+                case 'Ecu Manufacturer':
+                    $this->ecuManufacturer = $value;
+                    break;
+                case 'Ecu Build':
+                    $this->ecuBuild = $value;
+                    break;
+                case 'ECU_Nr_ECU':
+                    $this->ecuNrEcu = $value;
+                    break;
+                case 'ECU_Nr_Prod':
+                    $this->ecuNrProd = $value;
+                    break;
+                case 'Software':
+                    $this->software = $value;
+                    break;
+                case 'SoftwareVersion':
+                    $this->softwareVersion = $value;
+                    break;
+                default:
+                    $this->options[$key] = $value;
+                    break;
+            }
+        }
+    }
+
+    /**
      * Computer name getter.
      */
-    public function getComputer(): string
+    public function getComputer(): ?string
     {
         return $this->computer;
     }
@@ -74,7 +219,7 @@ class Purchase
     /**
      * Customer name getter.
      */
-    public function getCustomer(): string
+    public function getCustomer(): ?int
     {
         return $this->customer;
     }
@@ -82,7 +227,7 @@ class Purchase
     /**
      * Filename getter.
      */
-    public function getFilename(): string
+    public function getFilename(): ?string
     {
         return $this->filename;
     }
@@ -90,68 +235,158 @@ class Purchase
     /**
      * IP getter.
      */
-    public function getIp(): string
+    public function getIp(): ?string
     {
         return $this->ip;
     }
 
     /**
-     * Computer name fluent setter.
-     *
-     * @param string $computer the new computer name
+     * Return new columns provided by API.
+     * 
+     * @return array
      */
-    public function setComputer(string $computer): Purchase
+    public function getOptions(): array
     {
-        $this->computer = $computer;
-
-        return $this;
+        return $this->options;
     }
 
     /**
-     * Created datetime fluent setter.
-     *
-     * @param DateTimeInterface $createdAt the new creation datetime
+     * Date getter.
+     * 
+     * @return DateTimeImmutable|null
      */
-    public function setCreatedAt(DateTimeInterface $createdAt): Purchase
+    public function getDate(): ?DateTimeImmutable
     {
-        $this->createdAt = $createdAt;
-
-        return $this;
+        return $this->date;
     }
 
     /**
-     * Customer fluent setter.
+     * Manufacturer getter.
      *
-     * @param string $customer the customer id
+     * @return string
      */
-    public function setCustomer(string $customer): Purchase
+    public function getManufacturer(): ?string
     {
-        $this->customer = $customer;
-
-        return $this;
+        return $this->manufacturer;
     }
 
     /**
-     * Filename fluent setter.
+     * Series getter.
      *
-     * @param string $filename the new filename
+     * @return string
      */
-    public function setFilename(string $filename): Purchase
+    public function getSeries(): ?string
     {
-        $this->filename = $filename;
-
-        return $this;
+        return $this->series;
     }
 
     /**
-     * IP fluent setter.
+     * Build getter.
      *
-     * @param string $ip the new IP
+     * @return string
      */
-    public function setIp(string $ip): Purchase
+    public function getBuild(): ?string
     {
-        $this->ip = $ip;
+        return $this->build;
+    }
 
-        return $this;
+    /**
+     * Model getter.
+     *
+     * @return string
+     */
+    public function getModel(): ?string
+    {
+        return $this->model;
+    }
+
+    /**
+     * Characteristic getter.
+     *
+     * @return string
+     */
+    public function getCharacteristic(): ?string
+    {
+        return $this->characteristic;
+    }
+
+    /**
+     * Output getter.
+     *
+     * @return string
+     */
+    public function getOutput(): ?string
+    {
+        return $this->output;
+    }
+
+    /**
+     * Project getter.
+     *
+     * @return string
+     */
+    public function getProject(): ?string
+    {
+        return $this->project;
+    }
+
+    /**
+     * Ecu manufacturer getter.
+     *
+     * @return string
+     */
+    public function getEcuManufacturer(): ?string
+    {
+        return $this->ecuManufacturer;
+    }
+
+    /**
+     * Ecu build getter.
+     *
+     * @return string
+     */
+    public function getEcuBuild(): ?string
+    {
+        return $this->ecuBuild;
+    }
+
+    /**
+     * Ecu Nr Ecu getter.
+     *
+     * @return string
+     */
+    public function getEcuNrEcu(): ?string
+    {
+        return $this->ecuNrEcu;
+    }
+
+    /**
+     * Ecu Nr Prod getter.
+     *
+     * @return string
+     */
+    public function getEcuNrProd(): ?string
+    {
+        return $this->ecuNrProd;
+    }
+
+    /**
+     * Software getter.
+     *
+     * @return string
+     */
+    public function getSoftware(): ?string
+    {
+        return $this->software;
+    }
+
+    /**
+     * Software version getter.
+     *
+     * @return string
+     */
+    public function getSoftwareVersion(): ?string
+    {
+        return $this->softwareVersion;
     }
 }

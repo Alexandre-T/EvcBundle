@@ -28,17 +28,17 @@ interface EvcServiceInterface
      *
      * The "credits" value can be negative, so you can subtract with this command as well.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      * @param int    $credit   the positive or negative number of credits to add (or remove)
      */
-    public function addCredit(string $customer, int $credit);
+    public function addCredit(int $customer, int $credit);
 
     /**
      * Check a personal account balance.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      */
-    public function checkAccount(string $customer): int;
+    public function checkAccount(int $customer): int;
 
     /**
      * Create a personal customer.
@@ -46,28 +46,29 @@ interface EvcServiceInterface
      * A personal customer must already as EVC customer. Making him a personal customer allows him to see your reseller
      * files and creates a personal account balance relationship with you. Only add customers who asked for this.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      */
-    public function createPersonalCustomer(string $customer);
+    public function createPersonalCustomer(int $customer);
 
     /**
      * Does this customer exists.
      *
      * Note: This doesn't check if this is a personal customer of you. It checks the EVC customer base.
      *
-     * @param string $customer the customer id
+     * @param int $customer the customer id
      */
-    public function exists(string $customer): bool;
+    public function exists(int $customer): bool;
+
 
     /**
      * Returns a collection of the purchases performed in the last X (up to 99) days.
      *
-     * @param string $customer the customer id
-     * @param int    $days     the number of
+     * @param int      $days     the number of
+     * @param int|null $customer filter purchases on specified customer id
      *
      * @return Purchase[]
      */
-    public function getPurchases(string $customer, int $days): array;
+    public function getPurchases(int $days, int $customer = null): array;
 
     /**
      * Setting a personal account balance.
@@ -75,8 +76,8 @@ interface EvcServiceInterface
      * This is not recommended for adding/removing points because the customer might purchase at the same time,
      * causing a wrong balance.
      *
-     * @param string $customer the customer id
-     * @param int    $credit   the new account balance
+     * @param int $customer the customer id
+     * @param int $credit   the new account balance
      */
-    public function setCredit(string $customer, int $credit);
+    public function setCredit(int $customer, int $credit);
 }

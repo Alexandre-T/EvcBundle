@@ -1,0 +1,46 @@
+ok: JSON follows
+{
+   "status": "OK",
+   "data": [
+      {
+         "Customer": 33333,
+         "Filename": "file1.ols",
+         "ComputerName": "MyPC",
+         "IP": "127.0.0.2",
+         "Date": "2019-12-18T00:00:00",
+         "Manufacturer": "MyManufacturer",
+         "Series": "Serie",
+         "Build": "Build",
+         "Model": "Model",
+         "Characteristic": "None",
+         "Output": "260.0PS  191.2kW",
+         "Project type": "tuningFile",
+         "Ecu Manufacturer": "Foo",
+         "Ecu Build": "Bar",
+         "ECU_Nr_ECU": "55000000",
+         "ECU_Nr_Prod": "02000000",
+         "Software": "379553",
+         "SoftwareVersion": "1.0"
+      },
+      {
+         "Customer": 11111,
+         "Filename": "file1.ols",
+         "ComputerName": "MyPC",
+         "IP": "127.0.0.2",
+         "Date": "2019-12-18T00:00:00",
+         "Manufacturer": "MyManufacturer",
+         "Series": "Serie",
+         "Build": "Build",
+         "Model": "Model",
+         "Characteristic": "None",
+         "Output": "260.0PS  191.2kW",
+         "Project type": "tuningFile",
+         "Ecu Manufacturer": "Foo",
+         "Ecu Build": "Bar",
+         "ECU_Nr_ECU": "55000000",
+         "ECU_Nr_Prod": "02000000",
+         "Software": "379553",
+         "SoftwareVersion": "1.0"
+      }
+   ]
+}
