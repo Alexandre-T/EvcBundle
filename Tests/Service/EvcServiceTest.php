@@ -374,4 +374,41 @@ class EvcServiceTest extends TestCase
         $this->evcService->createPersonalCustomer(33333);
         $request->verifyInvokedOnce('get');
     }
+
+    /**
+     * @test
+     * @covers ::setCredit
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should NOT happen
+     */
+    public function setCredit(): void
+    {
+        $response = new Response(200, 'ok: 121', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        $this->evcService->setCredit(33333, 150);
+        $request->verifyInvokedOnce('get');
+
+        self::assertTrue(true); //mark test as successful
+    }
+
+    /**
+     * @test
+     * @covers ::setCredit
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function setCreditFailed(): void
+    {
+        $response = new Response(200, 'fail: this is not a personal customer of you', '', []);
+        $request = test::double(Request::class, ['get' => $response]);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
+
+        $this->evcService->setCredit(33333, 150);
+        $request->verifyInvokedOnce('get');
+    }
 }

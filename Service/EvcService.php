@@ -216,10 +216,21 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      * @param int $credit   the new account balance
+     *
+     * @throws EvcException when an error occurred
      */
     public function setCredit(int $customer, int $credit): void
     {
-        // TODO: Implement setCredit() method.
+        $params = [
+            'verb' => 'setcustomeraccount',
+            'customer' => $customer,
+            'credits' => $credit,
+        ];
+        $response = $this->getRequest($params);
+
+        $result = preg_match('/^ok: ([-+]?\\d+)$/', $response->body, $matches);
+
+        $this->checkResult($result, $matches, $response->body);
     }
 
     /**
