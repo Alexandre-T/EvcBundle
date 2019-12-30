@@ -32,7 +32,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        if (-1 === version_compare('4.0.0', Kernel::VERSION)) {
+        if (1 === version_compare('4.0.0', Kernel::VERSION)) {
             //Version 3.4
             $treeBuilder = new TreeBuilder();
             $rootNode = $treeBuilder->root('alexandre_evc');
