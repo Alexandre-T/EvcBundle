@@ -3,7 +3,7 @@
   "description": "Integration of EVC API in Symfony applications",
   "homepage": "https://github.com/Alexandre-T/EvcBundle",
   "type": "symfony-bundle",
-  "license": " CECILL-B",
+  "license": "CECILL-B",
   "authors": [
     {
       "name": "Alexandre Tranchant",
@@ -17,10 +17,10 @@
   },
   "require": {
     "php": "^7.2",
-    "symfony/config": "^4.4",
-    "symfony/dependency-injection": "^4.4",
-    "symfony/http-kernel": "^4.4",
-    "symfony/yaml": "^4.4",
+    "symfony/config": "^3.4|^4.3|^5.0",
+    "symfony/dependency-injection": "^3.4|^4.3|^5.0",
+    "symfony/http-kernel": "^3.4|^4.3|^5.0",
+    "symfony/yaml": "^3.4|^4.3|^5.0",
     "mashape/unirest-php": "^3.0",
     "ext-json": "*"
   },
@@ -30,9 +30,9 @@
     }
   },
   "require-dev": {
-    "symfony/phpunit-bridge": "^4.4",
+    "symfony/phpunit-bridge": "^3.4|^4.3|^5.0",
     "phpunit/phpunit": "^8.5",
-    "symfony/debug": "^4.4",
+    "symfony/debug": "^3.4|^4.3|^5.0",
     "codeception/aspect-mock": "^3.0",
     "friendsofphp/php-cs-fixer": "^2.16",
     "phpmd/phpmd": "^2.8",
