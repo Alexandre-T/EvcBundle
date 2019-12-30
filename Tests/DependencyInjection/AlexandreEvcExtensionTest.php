@@ -91,7 +91,7 @@ class AlexandreEvcExtensionTest extends TestCase
         $container = $this->getContainer();
         $message = 'Unrecognized option "url" under "alexandre_evc". Available options are "api_id", "password", "username".';
         if (version_compare(Kernel::VERSION, '4.0.0') == -1) {
-            $message = 'Unrecognized option "url" under "alexandre_evc".';
+            $message = 'Unrecognized option "url" under "alexandre_evc"';
         }
 
         self::expectException(InvalidConfigurationException::class);
