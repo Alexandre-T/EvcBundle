@@ -18,6 +18,7 @@ namespace Alexandre\EvcBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Class Configuration.
@@ -31,9 +32,16 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('alexandre_evc');
+        if (-1 === version_compare('4.0.0', Kernel::VERSION)) {
+            //Version 3.4
+            $treeBuilder = new TreeBuilder();
+            $rootNode = $treeBuilder->root('alexandre_evc');
+        } else {
+            $treeBuilder = new TreeBuilder('alexandre_evc');
+            $rootNode = $treeBuilder->getRootNode();
+        }
 
-        $treeBuilder->getRootNode()
+        $rootNode
             ->children()
             ->scalarNode('api_id')
             ->isRequired()
