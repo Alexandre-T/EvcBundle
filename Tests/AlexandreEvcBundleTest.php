@@ -14,16 +14,16 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Tests;
+namespace Alexandre\EvcBundle\Tests;
 
-use Alexandre\Evc\AlexandreEvcBundle;
+use Alexandre\EvcBundle\AlexandreEvcBundle;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @internal
- * @coversDefaultClass \Alexandre\Evc\AlexandreEvcBundle
+ * @coversDefaultClass \Alexandre\EvcBundle\AlexandreEvcBundle
  */
 class AlexandreEvcBundleTest extends TestCase
 {

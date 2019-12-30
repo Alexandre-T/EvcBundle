@@ -1,7 +1,8 @@
-alexandre_evc:
-    class: Alexandre\EvcBundle\AlexandreEvcBundle\Service\EvcService
-    arguments:
-        url: ''
-        api_id: ''
-        username: ''
-        password: ''
+services:
+    alexandre_evc:
+        class: Alexandre\EvcBundle\Service\EvcService
+        arguments:
+            url: 'https://evc.de/services/api_resellercredits.asp'
+            api_id: ''
+            username: ''
+            password: ''

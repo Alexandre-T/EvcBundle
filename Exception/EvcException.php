@@ -14,10 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Exception;
+namespace Alexandre\EvcBundle\Exception;
 
 use Exception;
 
+/**
+ * All exceptions thrown by this bundle shall be (or shall extend) EvcException.
+ */
 class EvcException extends Exception
 {
 }

@@ -14,16 +14,16 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Tests\Model;
+namespace Alexandre\EvcBundle\Tests\Model;
 
-use Alexandre\Evc\Model\Purchase;
+use Alexandre\EvcBundle\Model\Purchase;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class PurchaseTest test Purchase class.
  *
- * @coversDefaultClass \Alexandre\Evc\Model\Purchase
+ * @coversDefaultClass \Alexandre\EvcBundle\Model\Purchase
  *
  * @internal
  */

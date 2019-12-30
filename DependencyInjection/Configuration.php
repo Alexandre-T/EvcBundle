@@ -14,11 +14,14 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc;
+namespace Alexandre\EvcBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * Class Configuration.
+ */
 class Configuration implements ConfigurationInterface
 {
     /**

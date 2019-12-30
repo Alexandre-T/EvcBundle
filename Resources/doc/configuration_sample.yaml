@@ -1,0 +1,4 @@
+alexandre_evc:
+    api_id:               ~ # Required
+    username:             ~ # Required
+    password:             ~ # Required

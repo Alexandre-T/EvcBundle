@@ -14,10 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc;
+namespace Alexandre\EvcBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * Alexandre Evc Bundle.
+ */
 class AlexandreEvcBundle extends Bundle
 {
 }

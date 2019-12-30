@@ -14,9 +14,9 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Service;
+namespace Alexandre\EvcBundle\Service;
 
-use Alexandre\Evc\Model\Purchase;
+use Alexandre\EvcBundle\Model\Purchase;
 
 /**
  * Interface Evc Service defines methods to request an api as evc.de.

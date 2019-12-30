@@ -14,10 +14,10 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Service;
+namespace Alexandre\EvcBundle\Service;
 
-use Alexandre\Evc\Exception\EvcException;
-use Alexandre\Evc\Model\Purchase;
+use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Model\Purchase;
 use Unirest\Request;
 use Unirest\Response;
 

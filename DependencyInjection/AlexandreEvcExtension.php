@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc;
+namespace Alexandre\EvcBundle\DependencyInjection;
 
 use Exception;
 use Symfony\Component\Config\FileLocator;
@@ -22,6 +22,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
+/**
+ * Class AlexandreEvcExtension.
+ */
 class AlexandreEvcExtension extends ConfigurableExtension
 {
     /**
@@ -36,7 +39,10 @@ class AlexandreEvcExtension extends ConfigurableExtension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-        // you now have these 2 config keys
-        // $config['twitter']['client_id']
+        // you now have 3 config keys
+        $definition = $container->getDefinition('alexandre_evc');
+        $definition->replaceArgument('api_id', $mergedConfig['api_id']);
+        $definition->replaceArgument('username', $mergedConfig['username']);
+        $definition->replaceArgument('password', $mergedConfig['password']);
     }
 }

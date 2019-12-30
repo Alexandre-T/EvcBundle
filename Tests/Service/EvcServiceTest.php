@@ -14,11 +14,11 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Tests\Service;
+namespace Alexandre\EvcBundle\Tests\Service;
 
-use Alexandre\Evc\Exception\EvcException;
-use Alexandre\Evc\Model\Purchase;
-use Alexandre\Evc\Service\EvcService;
+use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Model\Purchase;
+use Alexandre\EvcBundle\Service\EvcService;
 use AspectMock\Test as test;
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +27,7 @@ use Unirest\Response;
 
 /**
  * @internal
- * @coversDefaultClass \Alexandre\Evc\Service\EvcService
+ * @coversDefaultClass \Alexandre\EvcBundle\Service\EvcService
  */
 class EvcServiceTest extends TestCase
 {

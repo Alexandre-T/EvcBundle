@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Alexandre\Evc\Model;
+namespace Alexandre\EvcBundle\Model;
 
 use DateTimeImmutable;
 use Exception;
