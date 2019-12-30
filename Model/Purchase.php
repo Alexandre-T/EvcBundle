@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Alexandre\Evc\Model;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use Exception;
 
 /**
@@ -60,13 +59,6 @@ class Purchase
      * @var string
      */
     private $computer;
-
-    /**
-     * The datetime of subscription.
-     *
-     * @var DateTimeInterface
-     */
-    private $createdAt;
 
     /**
      * The customer id.
@@ -212,14 +204,6 @@ class Purchase
     }
 
     /**
-     * Creation datetime getter.
-     */
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    /**
      * Customer name getter.
      */
     public function getCustomer(): ?int
@@ -313,10 +297,22 @@ class Purchase
 
     /**
      * Return new columns provided by API.
+     *
+     * @param string|null $key key of the options to get value. let null to retrieve full array
+     *
+     * @return bool|string|int|float|array
      */
-    public function getOptions(): array
+    public function getOptions(string $key = null)
     {
-        return $this->options;
+        if (null === $key) {
+            return $this->options;
+        }
+
+        if (array_key_exists($key, $this->options)) {
+            return $this->options[$key];
+        }
+
+        return false;
     }
 
     /**
