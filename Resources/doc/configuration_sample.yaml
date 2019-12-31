@@ -1,4 +1,11 @@
 alexandre_evc:
-    api_id:               ~ # Required
-    username:             ~ # Required
-    password:             ~ # Required
+
+    # This is the API version, a string code
+    api_id:               ~ # Required, Example: api_version_1
+
+    # This is your account number
+    username:             ~ # Required, Example: 33333
+
+    # This is the password of your api account, this is NOT the password to login on evc.de website.
+    # You shall use an ENV variable to avoid store your password on cloud.
+    password:             ~ # Required, Example: '%env(EVC_PASSWORD)%'
