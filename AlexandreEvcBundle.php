@@ -9,7 +9,7 @@
  *
  * @author    Alexandre Tranchant <alexandre.tranchant@gmail.com>
  * @copyright 2020 Alexandre Tranchant
- * @license   Cecill-B http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
+ * @license   MIT https://spdx.org/licenses/MIT.html
  */
 
 declare(strict_types=1);
