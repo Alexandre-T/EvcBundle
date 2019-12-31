@@ -121,10 +121,10 @@ class AlexandreEvcExtensionTest extends TestCase
         );
 
         $expected = [
-            'url' => 'https://evc.de/services/api_resellercredits.asp',
-            'api_id' => 'foo_api',
-            'username' => 'alexandre',
-            'password' => 'evc',
+            '$url' => 'https://evc.de/services/api_resellercredits.asp',
+            '$api' => 'foo_api',
+            '$username' => 'alexandre',
+            '$password' => 'evc',
         ];
 
         self::assertEquals($expected, $container->getDefinition('alexandre_evc')->getArguments());
