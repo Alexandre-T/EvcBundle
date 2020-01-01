@@ -38,7 +38,7 @@ class AlexandreEvcExtension extends ConfigurableExtension
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $loader->load('services.yaml');
         // you now have 3 config keys
         $definition = $container->getDefinition('alexandre_evc_request');
         $definition->replaceArgument('$api', $mergedConfig['api_id']);
