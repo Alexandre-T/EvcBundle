@@ -43,7 +43,7 @@ class BundleInitializationTest extends BaseBundleTestCase
     }
 
     /**
-     * Stop kernel
+     * Stop kernel.
      */
     protected function tearDown(): void
     {

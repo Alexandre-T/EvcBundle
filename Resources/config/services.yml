@@ -2,9 +2,15 @@ services:
     alexandre_evc:
         class: Alexandre\EvcBundle\Service\EvcService
         arguments:
+            $requester: '@alexandre_evc_request'
+    alexandre_evc_request:
+        class: Alexandre\EvcBundle\Service\RequestService
+        arguments:
             $url: 'https://evc.de/services/api_resellercredits.asp'
             $api: '%env(EVC_API)%'
             $username: '%env(EVC_USERNAME)%'
             $password: '%env(EVC_PASSWORD)%'
     Alexandre\EvcBundle\Service\EvcServiceInterface:
         alias: alexandre_evc
+    Alexandre\EvcBundle\Service\RequestServiceInterface:
+        alias: alexandre_evc_request

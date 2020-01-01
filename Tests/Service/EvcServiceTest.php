@@ -19,10 +19,11 @@ namespace Alexandre\EvcBundle\Tests\Service;
 use Alexandre\EvcBundle\Exception\EvcException;
 use Alexandre\EvcBundle\Model\Purchase;
 use Alexandre\EvcBundle\Service\EvcService;
-use AspectMock\Test as test;
+use Alexandre\EvcBundle\Service\RequestService;
+use Alexandre\EvcBundle\Service\RequestServiceInterface;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Unirest\Request;
 use Unirest\Response;
 
 /**
@@ -37,11 +38,29 @@ class EvcServiceTest extends TestCase
     private $evcService;
 
     /**
+     * @var MockObject|RequestServiceInterface
+     */
+    private $requester;
+
+    /**
      * Initialize evc service before each test.
      */
     public function setUp(): void
     {
-        $this->evcService = new EvcService('http://example.org/url', 'api', 'username', 'password');
+        $params = [
+            'url' => 'http://example.org/url',
+            'api' => 'api-id',
+            'username' => '33333',
+            'password' => 'foobar',
+        ];
+
+        $this->requester = $this->getMockBuilder(RequestService::class)
+            ->setConstructorArgs($params)
+            ->onlyMethods(['get'])
+            ->getMock()
+        ;
+
+        $this->evcService = new EvcService($this->requester);
     }
 
     /**
@@ -51,7 +70,10 @@ class EvcServiceTest extends TestCase
      */
     protected function tearDown(): void
     {
-        test::clean(); // remove all registered test doubles
+        $this->requester = null;
+        $this->evcService = null;
+
+        parent::tearDown();
     }
 
     /**
@@ -77,9 +99,9 @@ class EvcServiceTest extends TestCase
     public function accountShouldBeHuge(): void
     {
         $response = new Response(200, 'ok: 9876543210', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         self::assertEquals(9876543210, $this->evcService->checkAccount(33333));
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -91,9 +113,9 @@ class EvcServiceTest extends TestCase
     public function accountShouldBeNegative(): void
     {
         $response = new Response(200, 'ok: -8', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         self::assertEquals(-8, $this->evcService->checkAccount(33333));
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -105,9 +127,9 @@ class EvcServiceTest extends TestCase
     public function accountShouldBeZero(): void
     {
         $response = new Response(200, 'ok: 0', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         self::assertEquals(0, $this->evcService->checkAccount(33333));
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -119,13 +141,12 @@ class EvcServiceTest extends TestCase
     public function accountShouldNotBeAccessible(): void
     {
         $response = new Response(200, 'fail: this is not a personal customer of you', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
 
         $this->evcService->checkAccount(33333);
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -137,9 +158,9 @@ class EvcServiceTest extends TestCase
     public function customerShouldBeCredited(): void
     {
         $response = new Response(200, 'ok: 123', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         self::assertEquals(123, $this->evcService->addCredit(33333, 78));
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -151,13 +172,12 @@ class EvcServiceTest extends TestCase
     public function customerShouldNotBeCredited(): void
     {
         $response = new Response(200, 'ok: foobar', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: ok: foobar');
 
         self::assertEquals(123, $this->evcService->addCredit(33333, 78));
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -169,9 +189,9 @@ class EvcServiceTest extends TestCase
     public function existsShouldReturnFalse(): void
     {
         $response = new Response(200, 'fail: unknown evc customer', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         self::assertFalse($this->evcService->exists(33333));
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -183,9 +203,9 @@ class EvcServiceTest extends TestCase
     public function existsShouldReturnTrue(): void
     {
         $response = new Response(200, 'ok: evc customer exists', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         self::assertTrue($this->evcService->exists(33333));
-        $request->verifyInvoked('get');
     }
 
     /**
@@ -197,13 +217,12 @@ class EvcServiceTest extends TestCase
     public function existsShouldThrowAnotherException(): void
     {
         $response = new Response(500, 'foo bar', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc return a response with code 500');
 
         $this->evcService->exists(33333);
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -215,13 +234,12 @@ class EvcServiceTest extends TestCase
     public function existsShouldThrowException(): void
     {
         $response = new Response(200, 'fail: no user authorization', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('fail: no user authorization');
 
         $this->evcService->exists(33333);
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -234,10 +252,9 @@ class EvcServiceTest extends TestCase
     {
         $content = self::getMockedFile('empty-purchase.txt');
         $response = new Response(200, $content, '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         $purchases = $this->evcService->getPurchases(10);
-        $request->verifyInvokedOnce('get');
 
         self::assertIsArray($purchases);
         self::assertCount(0, $purchases);
@@ -252,13 +269,12 @@ class EvcServiceTest extends TestCase
     public function getPurchasesFailed(): void
     {
         $response = new Response(200, 'fail: foo bar', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: fail: foo bar');
 
         $this->evcService->getPurchases(10);
-        $request->verifyInvokedOnce('get');
     }
 
     /**
@@ -299,7 +315,7 @@ class EvcServiceTest extends TestCase
     {
         $content = self::getMockedFile('empty-json.txt');
         $response = new Response(200, $content, '', []);
-        test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: Json from evc.de does not contain data');
@@ -317,10 +333,9 @@ class EvcServiceTest extends TestCase
         $actual = $expected = 33333;
         $content = self::getMockedFile('get-purchase.txt');
         $response = new Response(200, $content, '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         $purchases = $this->evcService->getPurchases(10, $actual);
-        $request->verifyInvokedOnce('get');
 
         self::assertIsArray($purchases);
         self::assertCount(1, $purchases);
@@ -339,7 +354,7 @@ class EvcServiceTest extends TestCase
     {
         $content = self::getMockedFile('invalid-json.txt');
         $response = new Response(200, $content, '', []);
-        test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: Json from evc.de is not a valid JSON');
@@ -356,10 +371,9 @@ class EvcServiceTest extends TestCase
     {
         $content = self::getMockedFile('get-purchase.txt');
         $response = new Response(200, $content, '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         $purchases = $this->evcService->getPurchases(10);
-        $request->verifyInvokedOnce('get');
 
         self::assertIsArray($purchases);
         self::assertCount(2, $purchases);
@@ -381,10 +395,10 @@ class EvcServiceTest extends TestCase
     public function personalCustomerShouldBeCreated(): void
     {
         $response = new Response(200, 'ok: customer added', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
+
         $this->evcService->createPersonalCustomer(33333);
-        $request->verifyInvokedOnce('get');
-        self::assertTrue(true); // Mark test as done.
+        self::assertTrue(true); // Mark test as done, no exception is thrown.
     }
 
     /**
@@ -396,13 +410,29 @@ class EvcServiceTest extends TestCase
     public function personalCustomerShouldNotBeCreated(): void
     {
         $response = new Response(200, 'fail: customer already exists', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: fail: customer already exists');
 
         $this->evcService->createPersonalCustomer(33333);
-        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * @test
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function personalCustomerWithAnotherSentence(): void
+    {
+        $response = new Response(200, 'ok: something unexpected', '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Unexpected evc message received: ok: something unexpected');
+
+        $this->evcService->createPersonalCustomer(33333);
     }
 
     /**
@@ -414,12 +444,10 @@ class EvcServiceTest extends TestCase
     public function setCredit(): void
     {
         $response = new Response(200, 'ok: 121', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         $this->evcService->setCredit(33333, 150);
-        $request->verifyInvokedOnce('get');
-
-        self::assertTrue(true); //mark test as successful
+        self::assertTrue(true); //mark test as successful, no exception is thrown
     }
 
     /**
@@ -431,12 +459,25 @@ class EvcServiceTest extends TestCase
     public function setCreditFailed(): void
     {
         $response = new Response(200, 'fail: this is not a personal customer of you', '', []);
-        $request = test::double(Request::class, ['get' => $response]);
+        $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
         self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
 
         $this->evcService->setCredit(33333, 150);
-        $request->verifyInvokedOnce('get');
+    }
+
+    /**
+     * Force the requester to return a mocked response.
+     *
+     * @param Response $response the response returned by mocked requester
+     */
+    private function setMockedResponse(Response $response): void
+    {
+        $this->requester
+            ->expects(self::once())
+            ->method('get')
+            ->willReturn($response)
+        ;
     }
 }

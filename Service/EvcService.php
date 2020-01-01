@@ -18,8 +18,6 @@ namespace Alexandre\EvcBundle\Service;
 
 use Alexandre\EvcBundle\Exception\EvcException;
 use Alexandre\EvcBundle\Model\Purchase;
-use Unirest\Request;
-use Unirest\Response;
 
 /**
  * Class Evc Service is requesting the API evc.de and analyses responses.
@@ -30,39 +28,22 @@ class EvcService implements EvcServiceInterface
     public const DAYS_MIN = 1;
 
     /**
-     * @var string
+     * The requester.
+     *
+     * This was created to avoid used of AspectMock
+     *
+     * @var RequestServiceInterface
      */
-    private $api;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var string
-     */
-    private $url;
-
-    /**
-     * @var string
-     */
-    private $username;
+    private $requester;
 
     /**
      * EvcService constructor.
      *
-     * @param string $url      api url
-     * @param string $api      api version provided by evc.de
-     * @param string $username your username
-     * @param string $password your api password
+     * @param RequestServiceInterface $requester the initialized requester provided by dependency injection
      */
-    public function __construct(string $url, string $api, string $username, string $password)
+    public function __construct(RequestServiceInterface $requester)
     {
-        $this->url = $url;
-        $this->api = urlencode($api);
-        $this->username = urlencode($username);
-        $this->password = urlencode($password);
+        $this->requester = $requester;
     }
 
     /**
@@ -87,7 +68,7 @@ class EvcService implements EvcServiceInterface
             'customer' => $customer,
             'credits' => $credit,
         ];
-        $response = $this->getRequest($params);
+        $response = $this->requester->request($params);
 
         $result = preg_match('/^ok:\s([-+]?\d+)/', $response->body, $matches);
 
@@ -109,7 +90,7 @@ class EvcService implements EvcServiceInterface
             'verb' => 'getcustomeraccount',
             'customer' => $customer,
         ];
-        $response = $this->getRequest($params);
+        $response = $this->requester->request($params);
 
         $result = preg_match('/^ok:\s([-+]?\d+)/', $response->body, $matches);
 
@@ -134,10 +115,10 @@ class EvcService implements EvcServiceInterface
             'verb' => 'checkevccustomer',
             'customer' => $customer,
         ];
-        $response = $this->getRequest($params);
+        $response = $this->requester->request($params);
 
         if ('ok: customer added' !== trim($response->body)) {
-            throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
+            throw new EvcException(sprintf('Unexpected evc message received: %s', trim($response->body)));
         }
     }
 
@@ -156,7 +137,9 @@ class EvcService implements EvcServiceInterface
             'verb' => 'checkevccustomer',
             'customer' => $customer,
         ];
-        $response = $this->getRequest($params);
+
+        //Do not throws an error on failed.
+        $response = $this->requester->request($params, false);
 
         if ('ok: evc customer exists' === trim($response->body)) {
             return true;
@@ -187,7 +170,7 @@ class EvcService implements EvcServiceInterface
             'verb' => 'checkevccustomer',
             'customer' => $customer,
         ];
-        $response = $this->getRequest($params);
+        $response = $this->requester->request($params);
 
         $result = preg_match('/^ok:\sJSON\sfollows\s([\S\s]+)/', $response->body, $matches);
 
@@ -226,7 +209,7 @@ class EvcService implements EvcServiceInterface
             'customer' => $customer,
             'credits' => $credit,
         ];
-        $response = $this->getRequest($params);
+        $response = $this->requester->request($params);
 
         $result = preg_match('/^ok: ([-+]?\\d+)$/', $response->body, $matches);
 
@@ -279,55 +262,5 @@ class EvcService implements EvcServiceInterface
         if (1 !== $result || !is_array($matches) || 2 !== count($matches)) {
             throw new EvcException(sprintf('Evc error: %s', trim($body)));
         }
-    }
-
-    /**
-     * Return an array of headers.
-     */
-    private function getHeaders(): array
-    {
-        return [];
-    }
-
-    /**
-     * Return array of default params.
-     */
-    private function getParams(): array
-    {
-        return [
-            'apiid' => $this->api,
-            'password' => $this->password,
-            'username' => $this->username,
-        ];
-    }
-
-    /**
-     * Return the result of Request.
-     *
-     * @param array $params each params is a set of name and value
-     *
-     * @throws EvcException when response code is different from 200
-     */
-    private function getRequest(array $params): Response
-    {
-        $headers = $this->getHeaders();
-        $params += $this->getParams();
-        $request = $this->getUrl();
-
-        $response = Request::get($request, $headers, $params);
-
-        if (200 !== $response->code) {
-            throw new EvcException(sprintf('Evc return a response with code %d', $response->code));
-        }
-
-        return $response;
-    }
-
-    /**
-     * URL getter.
-     */
-    private function getUrl(): string
-    {
-        return $this->url;
     }
 }

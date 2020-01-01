@@ -40,7 +40,7 @@ class AlexandreEvcExtension extends ConfigurableExtension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         // you now have 3 config keys
-        $definition = $container->getDefinition('alexandre_evc');
+        $definition = $container->getDefinition('alexandre_evc_request');
         $definition->replaceArgument('$api', $mergedConfig['api_id']);
         $definition->replaceArgument('$username', $mergedConfig['username']);
         $definition->replaceArgument('$password', $mergedConfig['password']);

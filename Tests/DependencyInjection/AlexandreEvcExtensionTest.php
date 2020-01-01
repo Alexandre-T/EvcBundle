@@ -111,7 +111,7 @@ class AlexandreEvcExtensionTest extends TestCase
     {
         $container = $this->getContainer();
         $this->evcExtension->load([
-            'alexandre_evc' => [
+            'alexandre_evc_request' => [
                 'api_id' => 'foo_api',
                 'password' => 'evc',
                 'username' => 'alexandre',
@@ -127,7 +127,7 @@ class AlexandreEvcExtensionTest extends TestCase
             '$password' => 'evc',
         ];
 
-        self::assertEquals($expected, $container->getDefinition('alexandre_evc')->getArguments());
+        self::assertEquals($expected, $container->getDefinition('alexandre_evc_request')->getArguments());
     }
 
     /**
