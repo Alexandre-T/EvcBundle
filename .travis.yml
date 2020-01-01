@@ -36,9 +36,9 @@ matrix:
 
       # Install all SF components in the same major version, see https://github.com/dunglas/symfony-lock
     - php: 7.4
-      env: DEPENDENCIES="duncan/symfony-lock:^4.3"
+      env: DEPENDENCIES="symfony/framework-bundle:^4.3"
     - php: 7.4
-      env: DEPENDENCIES="duncan/symfony-lock:^4.4"
+      env: DEPENDENCIES="symfony/framework-bundle:^4.4"
     - php: 7.4
       env: SYMFONY_REQUIRE="5.0.*"
 
