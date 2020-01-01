@@ -18,6 +18,11 @@ $ composer require alexandret/evc-bundle
 
 Open env (or env.dist) file and search the new created lines to configure variable
 ```
+###> alexandret/evc-bundle ###
+EVC_API = ''
+EVC_USERNAME = ''
+EVC_PASSWORD = ''
+###< alexandret/evc-bundle ###
 ```
 
 Look at the configuration section for more explanation
@@ -44,11 +49,26 @@ in the `config/bundles.php` file of your project:
 
 return [
     // ...
-    Alexandre\Evc\AlexandreEvcBundle::class => ['all' => true],
+    Alexandre\EvcBundle\AlexandreEvcBundle::class => ['all' => true],
 ];
 ```
 
 Open your `env` file and add the value of necessary configuration variables
+
+### Step 3: Create a alexandre_evc.yaml file
+
+Create a `alexandre_evc.yaml` file under the config/packages subdirectory.
+Then copy and paste these lines:
+
+```yaml
+#config/packages/alexandre_evc.yaml
+alexandre_evc:
+  api_id: '%env(EVC_API)%'
+  username: '%env(EVC_USERNAME)%'
+  password: '%env(EVC_PASSWORD)%'
+```
+
+Do NOT replace env by your password. You have to configure your `.env` file as described in the below paragraph.
 
 Configuration
 -------------
@@ -61,7 +81,7 @@ EvcBundle needs data information. You shall complete them in your env file.
 It's a separate password that you get from the EVC office.
 
 Here is a sample:
-```
+```dotenv
 ###> alexandret/evc-bundle ###
 EVC_API = sample_key
 EVC_USERNAME = my_name
