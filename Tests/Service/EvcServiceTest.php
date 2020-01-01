@@ -246,6 +246,23 @@ class EvcServiceTest extends TestCase
      * @test
      *
      * @throws Exception    when Aspect Mock is not well initialized
+     * @throws EvcException this should happen
+     */
+    public function existsShouldThrowUnexpectedException(): void
+    {
+        $response = new Response(200, 'ok: foo bar', '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Unexpected evc message: ok: foo bar');
+
+        $this->evcService->exists(33333);
+    }
+
+    /**
+     * @test
+     *
+     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesEmpty(): void

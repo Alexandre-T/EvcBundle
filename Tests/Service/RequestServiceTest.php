@@ -63,24 +63,6 @@ class RequestServiceTest extends TestCase
     /**
      * Test the request method.
      *
-     * @test
-     *
-     * @throws EvcException this should happened
-     */
-    public function shouldNotThrowException(): void
-    {
-        $code = 200;
-        $body = 'fail: foo';
-        $mock = self::getResponseMocked($body, $code);
-
-        $response = $mock->request([], false);
-        self::assertEquals(200, $response->code);
-        self::assertStringContainsString('fail: foo', $response->body);
-    }
-
-    /**
-     * Test the request method.
-     *
      * @throws EvcException this should happened
      */
     public function testAnotherBadRequest(): void

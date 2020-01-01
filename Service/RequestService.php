@@ -100,11 +100,10 @@ class RequestService implements RequestServiceInterface
      * Return the result of Request.
      *
      * @param array $params each params is a set of name and value
-     * @param bool  $throws throws an error as soon as the Response body began with fail:
      *
      * @throws EvcException when response code is different from 200
      */
-    public function request(array $params, bool $throws = true): Response
+    public function request(array $params): Response
     {
         $response = $this->get($params);
 
@@ -112,7 +111,7 @@ class RequestService implements RequestServiceInterface
             throw new EvcException(sprintf('Evc return a response with code %d', $response->code));
         }
 
-        if ($throws && $this->isFailing($response->body)) {
+        if ($this->isFailing($response->body)) {
             throw new EvcException(sprintf('Evc error: %s', $response->body));
         }
 

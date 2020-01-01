@@ -139,17 +139,21 @@ class EvcService implements EvcServiceInterface
         ];
 
         //Do not throws an error on failed.
-        $response = $this->requester->request($params, false);
+        try {
+            $response = $this->requester->request($params);
 
-        if ('ok: evc customer exists' === trim($response->body)) {
-            return true;
+            if ('ok: evc customer exists' === trim($response->body)) {
+                return true;
+            }
+        } catch (EvcException $exception) {
+            if ('Evc error: fail: unknown evc customer' === $exception->getMessage()) {
+                return false;
+            }
+
+            throw new EvcException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
-        if ('fail: unknown evc customer' === trim($response->body)) {
-            return false;
-        }
-
-        throw new EvcException(sprintf('Evc error: %s', trim($response->body)));
+        throw new EvcException(sprintf('Unexpected evc message: %s', trim($response->body)));
     }
 
     /**

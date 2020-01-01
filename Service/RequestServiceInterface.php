@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Service;
 
+use Alexandre\EvcBundle\Exception\EvcException;
 use Unirest\Response;
 
 /**
@@ -27,7 +28,8 @@ interface RequestServiceInterface
      * Request the evc.de service and return a Unirest response.
      *
      * @param array $params the params to complete request
-     * @param bool  $throws throws an error when response begins with failed
+     *
+     * @throws EvcException when an error occurred while requesting evc.de service
      */
-    public function request(array $params, bool $throws = true): Response;
+    public function request(array $params): Response;
 }
