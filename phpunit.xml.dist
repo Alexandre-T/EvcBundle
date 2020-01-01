@@ -12,6 +12,11 @@
         </testsuite>
     </testsuites>
 
+    <php>
+        <env name="EVC_API" value="test"/>
+        <env name="EVC_USERNAME" value="test"/>
+        <env name="EVC_PASSWORD" value="test"/>
+    </php>
     <!-- Filters -->
     <filter>
         <whitelist>
