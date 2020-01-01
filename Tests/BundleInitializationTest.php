@@ -43,6 +43,16 @@ class BundleInitializationTest extends BaseBundleTestCase
     }
 
     /**
+     * Stop kernel
+     */
+    protected function tearDown(): void
+    {
+        $this->ensureKernelShutdown();
+
+        parent::tearDown();
+    }
+
+    /**
      * Test the bundle only with configuration file
      * It should failed because env variable is not defined.
      */
@@ -77,9 +87,6 @@ class BundleInitializationTest extends BaseBundleTestCase
 
         // Boot the kernel.
         $this->bootKernel();
-
-        // Get the container
-        $this->getContainer();
     }
 
     /**
