@@ -1,0 +1,3 @@
+# Force the end of line as Linux style
+# https://help.github.com/en/github/using-git/configuring-git-to-handle-line-endings#refreshing-a-repository-after-changing-line-endings
+* text eol=lf
