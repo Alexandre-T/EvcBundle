@@ -39,7 +39,7 @@
     "symfony/phpunit-bridge": "^3.4|^4.3|^5.0"
   },
   "scripts": {
-    "phpcs": "phpcs . --standard=phpcs.xml -s",
+    "phpcs": "phpcs . --standard=phpcs.xml.dist -s",
     "phpcsfixer": "php-cs-fixer fix . --config=.php_cs.dist --allow-risky yes",
     "phpmd": "phpmd . xml phpmd.xml --exclude vendor,build"
   },
