@@ -42,5 +42,10 @@
     "phpcs": "phpcs . --standard=phpcs.xml -s",
     "phpcsfixer": "php-cs-fixer fix . --config=.php_cs.dist --allow-risky yes",
     "phpmd": "phpmd . xml phpmd.xml --exclude vendor,build"
+  },
+  "extra": {
+    "symfony": {
+      "allow-contrib": true
+    }
   }
 }
