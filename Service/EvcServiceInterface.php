@@ -86,6 +86,17 @@ interface EvcServiceInterface
     public function getPurchases(int $days, int $customer = null): array;
 
     /**
+     * Is this customer a personal customer of the current reseller?
+     *
+     * @param int $customer the customer olsx identifier
+     *
+     * @throws EvcException when an error occurred
+     *
+     * @return bool false when the customer have no personal account
+     */
+    public function isPersonal(int $customer): bool;
+
+    /**
      * Setting a personal account balance.
      *
      * This is not recommended for adding/removing points because the customer might purchase at the same time,

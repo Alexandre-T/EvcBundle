@@ -16,8 +16,10 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Service;
 
+use Alexandre\EvcBundle\Exception\CredentialException;
 use Alexandre\EvcBundle\Exception\EvcException;
 use Alexandre\EvcBundle\Exception\LogicException;
+use Alexandre\EvcBundle\Exception\NetworkException;
 use Alexandre\EvcBundle\Model\Purchase;
 
 /**
@@ -83,7 +85,10 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
+     * @throws EvcException        when an error occurred
      */
     public function checkAccount(int $customer): int
     {
@@ -130,8 +135,7 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException   when an error occurred when accessing EVC API
-     * @throws LogicException when API returns a non-expected message
+     * @throws LogicException when EVC API returns a non-expected answer
      */
     public function exists(int $customer): bool
     {
@@ -193,6 +197,30 @@ class EvcService implements EvcServiceInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Is this customer a personal customer of the current reseller?
+     *
+     * @param int $customer the customer olsx identifier
+     *
+     * @throws LogicException when EVC API returns a non-expected answer
+     *
+     * @return bool false when the customer have no personal account
+     */
+    public function isPersonal(int $customer): bool
+    {
+        try {
+            $this->checkAccount($customer);
+        } catch (LogicException $logic) {
+            if (1 === preg_match('/fail: unknown evc customer$/', $logic->getMessage())) {
+                return false;
+            }
+
+            throw new LogicException($logic->getMessage(), $logic->getCode(), $logic);
+        }
+
+        return true;
     }
 
     /**

@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Alexandre\EvcBundle\Tests\Service;
 
 use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Exception\NetworkException;
 use Alexandre\EvcBundle\Model\Purchase;
 use Alexandre\EvcBundle\Service\EvcService;
@@ -402,6 +403,80 @@ class EvcServiceTest extends TestCase
         }
 
         self::assertNotEquals($purchases[0]->getCustomer(), $purchases[1]->getCustomer());
+    }
+
+    /**
+     * @test
+     *
+     * IsPersonal method should return true
+     *
+     * @throws EvcException this should not happen
+     */
+    public function isPersonalOnAnExistentCustomer(): void
+    {
+        $response = new Response(200, 'ok: 117', '', []);
+        $this->requester
+            ->expects(self::exactly(3))
+            ->method('get')
+            ->willReturn($response)
+        ;
+
+        self::assertTrue($this->evcService->isPersonal(42));
+
+        $response->body = 'ok: -117';
+        self::assertTrue($this->evcService->isPersonal(42));
+
+        $response->body = 'ok: 0';
+        self::assertTrue($this->evcService->isPersonal(42));
+    }
+
+    /**
+     * @test
+     *
+     * IsPersonal method should return false
+     *
+     * @throws EvcException this should not happen
+     */
+    public function isPersonalOnNonExistentCustomer(): void
+    {
+        $response = new Response(200, 'fail: unknown evc customer', '', []);
+        $this->setMockedResponse($response);
+
+        self::assertFalse($this->evcService->isPersonal(42));
+    }
+
+    /**
+     * @test
+     *
+     * IsPersonal method should return true
+     *
+     * @throws EvcException this should happen
+     */
+    public function isPersonalWithNonExpectedFailingAnswer(): void
+    {
+        $response = new Response(200, 'fail: FOOBAR', '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Evc error: fail: FOOBAR');
+        $this->evcService->isPersonal(42);
+    }
+
+    /**
+     * @test
+     *
+     * IsPersonal method should throw a EvcException
+     *
+     * @throws EvcException this should happen
+     */
+    public function isPersonalWithNonExpectedGoodAnswer(): void
+    {
+        $response = new Response(200, 'ok: FOOBAR', '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('Evc error: ok: FOOBAR');
+        $this->evcService->isPersonal(42);
     }
 
     /**

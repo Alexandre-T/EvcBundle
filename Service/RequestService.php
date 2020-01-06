@@ -86,9 +86,9 @@ class RequestService implements RequestServiceInterface
      *
      * @param array $params the query parameters
      *
-     * @return Response
-     *
      * @throws Exception when an error occurred with curl
+     *
+     * @return Response
      */
     public function get(array $params)
     {
