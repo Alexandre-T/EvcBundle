@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Service;
 
-use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\CredentialException;
+use Alexandre\EvcBundle\Exception\LogicException;
+use Alexandre\EvcBundle\Exception\NetworkException;
 use Unirest\Response;
 
 /**
@@ -29,7 +31,9 @@ interface RequestServiceInterface
      *
      * @param array $params the params to complete request
      *
-     * @throws EvcException when an error occurred while requesting evc.de service
+     * @throws CredentialException when credentials are not valid
+     * @throws LogicException      when EVC API returns a non-expected answer
+     * @throws NetworkException    when an error occurred while requesting evc.de service
      */
     public function request(array $params): Response;
 }

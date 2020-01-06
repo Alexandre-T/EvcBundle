@@ -16,10 +16,14 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Tests\Service;
 
+use Alexandre\EvcBundle\Exception\CredentialException;
 use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\LogicException;
+use Alexandre\EvcBundle\Exception\NetworkException;
 use Alexandre\EvcBundle\Service\RequestService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Unirest\Exception;
 use Unirest\Response;
 
 /**
@@ -71,7 +75,7 @@ class RequestServiceTest extends TestCase
         $body = 'fail: foo';
         $mock = self::getResponseMocked($body, $code);
 
-        self::expectException(EvcException::class);
+        self::expectException(LogicException::class);
         self::expectExceptionMessage('Evc error: fail: foo');
         $mock->request([]);
     }
@@ -87,8 +91,40 @@ class RequestServiceTest extends TestCase
         $body = 'ok: foo';
         $mock = self::getResponseMocked($body, $code);
 
-        self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc return a response with code 500');
+        self::expectException(NetworkException::class);
+        self::expectExceptionMessage('Evc API returns a response with code 500');
+        $mock->request([]);
+    }
+
+    /**
+     * Test the request method returning a message about credential.
+     *
+     * @throws EvcException this should happened
+     */
+    public function testCredentialRequest(): void
+    {
+        $code = 200;
+        $body = 'fail: no api authorization';
+        $mock = self::getResponseMocked($body, $code);
+
+        self::expectException(CredentialException::class);
+        self::expectExceptionMessage('Credential error: fail: no api authorization');
+        $mock->request([]);
+    }
+
+    /**
+     * Test the response when an exception is thrown by Unirest library.
+     *
+     * @throws EvcException a exception NetworkException should be thrown
+     */
+    public function testExceptionRequest(): void
+    {
+        $mock = self::getThrowerMocked('Unirest exception', 42);
+
+        self::expectException(NetworkException::class);
+        self::expectExceptionMessage('Unirest exception');
+        self::expectExceptionCode(42);
+
         $mock->request([]);
     }
 
@@ -141,6 +177,32 @@ class RequestServiceTest extends TestCase
         $mock->expects(self::once())
             ->method('get')
             ->willReturn($response)
+        ;
+
+        return $mock;
+    }
+
+    /**
+     * Throw an exception when calling the get method of the mocked object of RequestService.
+     *
+     * The private get method will return a Response without launching a request.
+     *
+     * @param string $message message of the exception
+     * @param int    $code    code of the exception
+     *
+     * @return MockObject|RequestService
+     */
+    private function getThrowerMocked(string $message, int $code): MockObject
+    {
+        $mock = $this->getMockBuilder(RequestService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get'])
+            ->getMock()
+        ;
+
+        $mock->expects(self::once())
+            ->method('get')
+            ->willThrowException(new Exception($message, $code))
         ;
 
         return $mock;

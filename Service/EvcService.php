@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Alexandre\EvcBundle\Service;
 
 use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Model\Purchase;
 
 /**
@@ -129,7 +130,8 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when an error occurred when accessing EVC API
+     * @throws EvcException   when an error occurred when accessing EVC API
+     * @throws LogicException when API returns a non-expected message
      */
     public function exists(int $customer): bool
     {
@@ -145,15 +147,13 @@ class EvcService implements EvcServiceInterface
             if ('ok: evc customer exists' === trim($response->body)) {
                 return true;
             }
-        } catch (EvcException $exception) {
-            if ('Evc error: fail: unknown evc customer' === $exception->getMessage()) {
+        } catch (LogicException $exception) {
+            if (1 === preg_match('/fail: unknown evc customer$/', $exception->getMessage())) {
                 return false;
             }
-
-            throw new EvcException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
-        throw new EvcException(sprintf('Unexpected evc message: %s', trim($response->body)));
+        throw new LogicException(sprintf('Unexpected evc message: %s', trim($response->body)));
     }
 
     /**

@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Alexandre\EvcBundle\Tests\Service;
 
 use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\NetworkException;
 use Alexandre\EvcBundle\Model\Purchase;
 use Alexandre\EvcBundle\Service\EvcService;
 use Alexandre\EvcBundle\Service\RequestService;
@@ -219,8 +220,8 @@ class EvcServiceTest extends TestCase
         $response = new Response(500, 'foo bar', '', []);
         $this->setMockedResponse($response);
 
-        self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc return a response with code 500');
+        self::expectException(NetworkException::class);
+        self::expectExceptionMessage('Evc API returns a response with code 500');
 
         $this->evcService->exists(33333);
     }

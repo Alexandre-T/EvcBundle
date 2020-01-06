@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Service;
 
+use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Model\Purchase;
 
 /**
@@ -33,6 +35,8 @@ interface EvcServiceInterface
      *
      * @param int $customer the customer id
      * @param int $credit   the positive or negative number of credits to add (or remove)
+     *
+     * @throws EvcException when an error occurred
      */
     public function addCredit(int $customer, int $credit);
 
@@ -40,6 +44,8 @@ interface EvcServiceInterface
      * Check a personal account balance.
      *
      * @param int $customer the customer id
+     *
+     * @throws EvcException when an error occurred
      */
     public function checkAccount(int $customer): int;
 
@@ -50,6 +56,8 @@ interface EvcServiceInterface
      * files and creates a personal account balance relationship with you. Only add customers who asked for this.
      *
      * @param int $customer the customer id
+     *
+     * @throws EvcException when an error occurred
      */
     public function createPersonalCustomer(int $customer);
 
@@ -59,6 +67,9 @@ interface EvcServiceInterface
      * Note: This doesn't check if this is a personal customer of you. It checks the EVC customer base.
      *
      * @param int $customer the customer id
+     *
+     * @throws EvcException   when an error occurred when accessing EVC API
+     * @throws LogicException when API returns a non-expected message
      */
     public function exists(int $customer): bool;
 
@@ -67,6 +78,8 @@ interface EvcServiceInterface
      *
      * @param int      $days     the number of
      * @param int|null $customer filter purchases on specified customer id
+     *
+     * @throws EvcException when an error occurred
      *
      * @return Purchase[]
      */
@@ -80,6 +93,8 @@ interface EvcServiceInterface
      *
      * @param int $customer the customer id
      * @param int $credit   the new account balance
+     *
+     * @throws EvcException when an error occurred
      */
     public function setCredit(int $customer, int $credit);
 }

@@ -16,7 +16,10 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Service;
 
-use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\CredentialException;
+use Alexandre\EvcBundle\Exception\LogicException;
+use Alexandre\EvcBundle\Exception\NetworkException;
+use Unirest\Exception;
 use Unirest\Request;
 use Unirest\Response;
 
@@ -25,6 +28,15 @@ use Unirest\Response;
  */
 class RequestService implements RequestServiceInterface
 {
+    /**
+     * Error messages returned by API.
+     */
+    public const CREDENTIAL_ERRORS = [
+        'fail: no api authorization',
+        'fail: no user authorization',
+        'fail: unknown verb',
+    ];
+
     /**
      * The api id.
      *
@@ -75,6 +87,8 @@ class RequestService implements RequestServiceInterface
      * @param array $params the query parameters
      *
      * @return Response
+     *
+     * @throws Exception when an error occurred with curl
      */
     public function get(array $params)
     {
@@ -82,6 +96,16 @@ class RequestService implements RequestServiceInterface
         $params += $this->getParams();
 
         return Request::get($this->getUrl(), $headers, $params);
+    }
+
+    /**
+     * Is the message corresponding to a credential error.
+     *
+     * @param string $message the body to analyze
+     */
+    public function isCredentialError(string $message): bool
+    {
+        return in_array($message, self::CREDENTIAL_ERRORS);
     }
 
     /**
@@ -97,22 +121,32 @@ class RequestService implements RequestServiceInterface
     }
 
     /**
-     * Return the result of Request.
+     * Request the evc.de service and return a Unirest response.
      *
-     * @param array $params each params is a set of name and value
+     * @param array $params the params to complete request
      *
-     * @throws EvcException when response code is different from 200
+     * @throws NetworkException    when an error occurred while requesting evc.de service
+     * @throws CredentialException when credentials are not valid
+     * @throws LogicException      when EVC API returns a non-expected answer
      */
     public function request(array $params): Response
     {
-        $response = $this->get($params);
+        try {
+            $response = $this->get($params);
+        } catch (Exception $curlException) {
+            throw new NetworkException($curlException->getMessage(), $curlException->getCode(), $curlException);
+        }
 
         if (200 !== $response->code) {
-            throw new EvcException(sprintf('Evc return a response with code %d', $response->code));
+            throw new NetworkException(sprintf('Evc API returns a response with code %d', $response->code));
+        }
+
+        if ($this->isCredentialError($response->body)) {
+            throw new CredentialException(sprintf('Credential error: %s', $response->body));
         }
 
         if ($this->isFailing($response->body)) {
-            throw new EvcException(sprintf('Evc error: %s', $response->body));
+            throw new LogicException(sprintf('Evc error: %s', $response->body));
         }
 
         return $response;
