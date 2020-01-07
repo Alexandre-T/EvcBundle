@@ -1,7 +1,7 @@
 #This file is used by symfony developer to switch from one PHP version to another.
 .php-version
 #Avoid phar file to this bundle
-/composer.phar
+/*.phar
 
 #Do not push to repository these files created by symfony and phpunit during composer install
 .env

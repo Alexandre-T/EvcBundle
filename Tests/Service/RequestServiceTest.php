@@ -76,7 +76,7 @@ class RequestServiceTest extends TestCase
         $mock = self::getResponseMocked($body, $code);
 
         self::expectException(LogicException::class);
-        self::expectExceptionMessage('Evc error: fail: foo');
+        self::expectExceptionMessage('fail: foo');
         $mock->request([]);
     }
 
@@ -130,6 +130,8 @@ class RequestServiceTest extends TestCase
 
     /**
      * Test the get method.
+     *
+     * @throws Exception this should NOT happen
      */
     public function testGet(): void
     {

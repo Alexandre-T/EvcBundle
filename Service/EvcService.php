@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Alexandre\EvcBundle\Service;
 
 use Alexandre\EvcBundle\Exception\CredentialException;
-use Alexandre\EvcBundle\Exception\EvcException;
 use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Exception\NetworkException;
 use Alexandre\EvcBundle\Model\Purchase;
@@ -27,6 +26,9 @@ use Alexandre\EvcBundle\Model\Purchase;
  */
 class EvcService implements EvcServiceInterface
 {
+    /*
+     * Max is a limitation of EVC API.
+     */
     public const DAYS_MAX = 99;
     public const DAYS_MIN = 1;
 
@@ -60,7 +62,9 @@ class EvcService implements EvcServiceInterface
      * @param int $customer the customer id
      * @param int $credit   the positive or negative number of credits to add (or remove)
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      *
      * @return int the new account balance
      */
@@ -88,7 +92,6 @@ class EvcService implements EvcServiceInterface
      * @throws LogicException      when a non-expected message is returned by API
      * @throws CredentialException when credentials are not valid
      * @throws NetworkException    when an error occurred while accessing EVC servers
-     * @throws EvcException        when an error occurred
      */
     public function checkAccount(int $customer): int
     {
@@ -113,7 +116,9 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when creating personal customer failed
+     * @throws LogicException      when EVC API returns a non-expected answer
+     * @throws CredentialException when bad credentials was sent
+     * @throws NetworkException    when a network or curl error occurred
      */
     public function createPersonalCustomer(int $customer): void
     {
@@ -124,7 +129,7 @@ class EvcService implements EvcServiceInterface
         $response = $this->requester->request($params);
 
         if ('ok: customer added' !== trim($response->body)) {
-            throw new EvcException(sprintf('Unexpected evc message received: %s', trim($response->body)));
+            throw new LogicException(sprintf('Unexpected evc message received: %s', trim($response->body)));
         }
     }
 
@@ -135,7 +140,9 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws LogicException when EVC API returns a non-expected answer
+     * @throws LogicException      when EVC API returns a non-expected answer
+     * @throws CredentialException when bad credentials was sent
+     * @throws NetworkException    when a network or curl error occurred
      */
     public function exists(int $customer): bool
     {
@@ -148,16 +155,18 @@ class EvcService implements EvcServiceInterface
         try {
             $response = $this->requester->request($params);
 
-            if ('ok: evc customer exists' === trim($response->body)) {
+            if ('ok: evc customer exists' === $response->body) {
                 return true;
             }
+
+            throw new LogicException(sprintf('Unexpected evc message: %s', $response->body));
         } catch (LogicException $exception) {
             if (1 === preg_match('/fail: unknown evc customer$/', $exception->getMessage())) {
                 return false;
             }
-        }
 
-        throw new LogicException(sprintf('Unexpected evc message: %s', trim($response->body)));
+            throw new LogicException($exception->getMessage(), $exception->getCode(), $exception);
+        }
     }
 
     /**
@@ -166,7 +175,9 @@ class EvcService implements EvcServiceInterface
      * @param int      $days     the number of
      * @param int|null $customer filter purchases on specified customer id
      *
-     * @throws EvcException when an error occurred when requesting EVC
+     * @throws LogicException      when EVC API returns a non-expected answer
+     * @throws CredentialException when bad credentials was sent
+     * @throws NetworkException    when a network or curl error occurred
      *
      * @return Purchase[]
      */
@@ -204,23 +215,35 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $customer the customer olsx identifier
      *
-     * @throws LogicException when EVC API returns a non-expected answer
+     * @throws LogicException      when EVC API returns a non-expected answer
+     * @throws CredentialException when bad credentials was sent
+     * @throws NetworkException    when a network or curl error occurred
      *
      * @return bool false when the customer have no personal account
      */
     public function isPersonal(int $customer): bool
     {
+        $response = null;
+        $params = [
+            'verb' => 'checkcustomer',
+            'customer' => $customer,
+        ];
+
         try {
-            $this->checkAccount($customer);
-        } catch (LogicException $logic) {
-            if (1 === preg_match('/fail: unknown evc customer$/', $logic->getMessage())) {
+            $response = $this->requester->request($params);
+
+            if ('ok' === $response->body) {
+                return true;
+            }
+
+            throw new LogicException(sprintf('Unexpected evc message: %s', $response->body));
+        } catch (LogicException $exception) {
+            if (1 === preg_match('/fail: this is not a personal customer of you$/', $exception->getMessage())) {
                 return false;
             }
 
-            throw new LogicException($logic->getMessage(), $logic->getCode(), $logic);
+            throw new LogicException($exception->getMessage(), $exception->getCode(), $exception);
         }
-
-        return true;
     }
 
     /**
@@ -232,7 +255,9 @@ class EvcService implements EvcServiceInterface
      * @param int $customer the customer id
      * @param int $credit   the new account balance
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when EVC API returns a non-expected answer
+     * @throws CredentialException when bad credentials was sent
+     * @throws NetworkException    when a network or curl error occurred
      */
     public function setCredit(int $customer, int $credit): void
     {
@@ -253,12 +278,12 @@ class EvcService implements EvcServiceInterface
      *
      * @param int $days the number provided
      *
-     * @throws EvcException when days are not in range
+     * @throws LogicException when days are not in range
      */
     private function checkDays(int $days): void
     {
         if ($days < self::DAYS_MIN || $days > self::DAYS_MAX) {
-            throw new EvcException('Evc error: days shall be between 1 and 99');
+            throw new LogicException('Evc error: days shall be between 1 and 99');
         }
     }
 
@@ -267,16 +292,16 @@ class EvcService implements EvcServiceInterface
      *
      * @param string $json provided by preg_match function
      *
-     * @throws EvcException when json is not valid
+     * @throws LogicException when json is not valid
      */
     private function checkJson($json): void
     {
         if (!is_array($json)) {
-            throw new EvcException(sprintf('Evc error: Json from evc.de is not a valid JSON'));
+            throw new LogicException(sprintf('Evc error: Json from evc.de is not a valid JSON'));
         }
 
         if (!isset($json['data']) || !is_array($json['data'])) {
-            throw new EvcException(sprintf('Evc error: Json from evc.de does not contain data'));
+            throw new LogicException(sprintf('Evc error: Json from evc.de does not contain data'));
         }
     }
 
@@ -287,12 +312,12 @@ class EvcService implements EvcServiceInterface
      * @param array  $matches matches created by preg_match function
      * @param string $body    body of request
      *
-     * @throws EvcException when the result of preg_match is not valid
+     * @throws LogicException when the result of preg_match is not valid
      */
     private function checkResult(int $result, $matches, string $body): void
     {
         if (1 !== $result || !is_array($matches) || 2 !== count($matches)) {
-            throw new EvcException(sprintf('Evc error: %s', trim($body)));
+            throw new LogicException(sprintf('Unexpected message from evc: %s', trim($body)));
         }
     }
 }

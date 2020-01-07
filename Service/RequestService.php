@@ -146,7 +146,7 @@ class RequestService implements RequestServiceInterface
         }
 
         if ($this->isFailing($response->body)) {
-            throw new LogicException(sprintf('Evc error: %s', $response->body));
+            throw new LogicException(sprintf('Unexpected evc message: %s', $response->body));
         }
 
         return $response;

@@ -146,7 +146,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
+        self::expectExceptionMessage('fail: this is not a personal customer of you');
 
         $this->evcService->checkAccount(33333);
     }
@@ -177,7 +177,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: ok: foobar');
+        self::expectExceptionMessage('Unexpected message from evc: ok: foobar');
 
         self::assertEquals(123, $this->evcService->addCredit(33333, 78));
     }
@@ -291,7 +291,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: fail: foo bar');
+        self::expectExceptionMessage('fail: foo bar');
 
         $this->evcService->getPurchases(10);
     }
@@ -305,7 +305,7 @@ class EvcServiceTest extends TestCase
     public function getPurchasesFailedWhenDaysAreTooGreat(): void
     {
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: days shall be between 1 and 99');
+        self::expectExceptionMessage('days shall be between 1 and 99');
 
         $this->evcService->getPurchases(150);
     }
@@ -319,7 +319,7 @@ class EvcServiceTest extends TestCase
     public function getPurchasesFailedWhenDaysAreTooSmall(): void
     {
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: days shall be between 1 and 99');
+        self::expectExceptionMessage('days shall be between 1 and 99');
 
         $this->evcService->getPurchases(0);
     }
@@ -337,7 +337,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: Json from evc.de does not contain data');
+        self::expectExceptionMessage('Json from evc.de does not contain data');
         $this->evcService->getPurchases(10);
     }
 
@@ -376,7 +376,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: Json from evc.de is not a valid JSON');
+        self::expectExceptionMessage('Json from evc.de is not a valid JSON');
         $this->evcService->getPurchases(10);
     }
 
@@ -414,19 +414,9 @@ class EvcServiceTest extends TestCase
      */
     public function isPersonalOnAnExistentCustomer(): void
     {
-        $response = new Response(200, 'ok: 117', '', []);
-        $this->requester
-            ->expects(self::exactly(3))
-            ->method('get')
-            ->willReturn($response)
-        ;
+        $response = new Response(200, 'ok', '', []);
+        $this->setMockedResponse($response);
 
-        self::assertTrue($this->evcService->isPersonal(42));
-
-        $response->body = 'ok: -117';
-        self::assertTrue($this->evcService->isPersonal(42));
-
-        $response->body = 'ok: 0';
         self::assertTrue($this->evcService->isPersonal(42));
     }
 
@@ -439,7 +429,7 @@ class EvcServiceTest extends TestCase
      */
     public function isPersonalOnNonExistentCustomer(): void
     {
-        $response = new Response(200, 'fail: unknown evc customer', '', []);
+        $response = new Response(200, 'fail: this is not a personal customer of you', '', []);
         $this->setMockedResponse($response);
 
         self::assertFalse($this->evcService->isPersonal(42));
@@ -458,7 +448,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(LogicException::class);
-        self::expectExceptionMessage('Evc error: fail: FOOBAR');
+        self::expectExceptionMessage('Unexpected evc message: fail: FOOBAR');
         $this->evcService->isPersonal(42);
     }
 
@@ -475,7 +465,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: ok: FOOBAR');
+        self::expectExceptionMessage('Unexpected evc message: ok: FOOBAR');
         $this->evcService->isPersonal(42);
     }
 
@@ -506,7 +496,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: fail: customer already exists');
+        self::expectExceptionMessage('fail: customer already exists');
 
         $this->evcService->createPersonalCustomer(33333);
     }
@@ -555,7 +545,7 @@ class EvcServiceTest extends TestCase
         $this->setMockedResponse($response);
 
         self::expectException(EvcException::class);
-        self::expectExceptionMessage('Evc error: fail: this is not a personal customer of you');
+        self::expectExceptionMessage('fail: this is not a personal customer of you');
 
         $this->evcService->setCredit(33333, 150);
     }

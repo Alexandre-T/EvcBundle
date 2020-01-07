@@ -16,12 +16,16 @@ declare(strict_types=1);
 
 namespace Alexandre\EvcBundle\Service;
 
-use Alexandre\EvcBundle\Exception\EvcException;
+use Alexandre\EvcBundle\Exception\CredentialException;
 use Alexandre\EvcBundle\Exception\LogicException;
+use Alexandre\EvcBundle\Exception\NetworkException;
 use Alexandre\EvcBundle\Model\Purchase;
 
 /**
  * Interface Evc Service defines methods to request an api as evc.de.
+ *
+ * All methods can throw logic, credential or network exceptions.
+ * All of these three exceptions inherits from EvcException.
  */
 interface EvcServiceInterface
 {
@@ -36,7 +40,9 @@ interface EvcServiceInterface
      * @param int $customer the customer id
      * @param int $credit   the positive or negative number of credits to add (or remove)
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      */
     public function addCredit(int $customer, int $credit);
 
@@ -45,7 +51,9 @@ interface EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      */
     public function checkAccount(int $customer): int;
 
@@ -57,7 +65,9 @@ interface EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      */
     public function createPersonalCustomer(int $customer);
 
@@ -68,8 +78,9 @@ interface EvcServiceInterface
      *
      * @param int $customer the customer id
      *
-     * @throws EvcException   when an error occurred when accessing EVC API
-     * @throws LogicException when API returns a non-expected message
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      */
     public function exists(int $customer): bool;
 
@@ -79,7 +90,9 @@ interface EvcServiceInterface
      * @param int      $days     the number of
      * @param int|null $customer filter purchases on specified customer id
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      *
      * @return Purchase[]
      */
@@ -90,7 +103,9 @@ interface EvcServiceInterface
      *
      * @param int $customer the customer olsx identifier
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      *
      * @return bool false when the customer have no personal account
      */
@@ -105,7 +120,9 @@ interface EvcServiceInterface
      * @param int $customer the customer id
      * @param int $credit   the new account balance
      *
-     * @throws EvcException when an error occurred
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
      */
     public function setCredit(int $customer, int $credit);
 }

@@ -34,6 +34,8 @@ interface RequestServiceInterface
      * @throws CredentialException when credentials are not valid
      * @throws LogicException      when EVC API returns a non-expected answer
      * @throws NetworkException    when an error occurred while requesting evc.de service
+     *
+     * @return Response This is a Unirest response
      */
     public function request(array $params): Response;
 }
