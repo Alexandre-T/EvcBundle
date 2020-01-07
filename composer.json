@@ -12,8 +12,8 @@
   ],
   "support": {
     "email": "Alexandre.Tranchant@gmail.com",
-    "issues": "https://github.com/Alexandre-T/casguard/issues",
-    "source": "https://github.com/Alexandre-T/casguard"
+    "issues": "https://github.com/Alexandre-T/evc-bundle/issues",
+    "source": "https://github.com/Alexandre-T/evc-bundle"
   },
   "require": {
     "ext-json": "*",
@@ -32,7 +32,6 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.16",
-    "phpunit/phpunit": "^8.5",
     "phpmd/phpmd": "^2.8",
     "squizlabs/php_codesniffer": "^3.5",
     "symfony/debug": "^3.4|^4.3|^5.0",
