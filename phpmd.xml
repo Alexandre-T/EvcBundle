@@ -6,9 +6,8 @@
                      http://pmd.sf.net/ruleset_xml_schema.xsd"
          xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
     <description>Alexandre Tranchant rule set.</description>
-    <exclude-pattern>Migrations*Version*.php</exclude-pattern>
     <!-- Import some rules of clean code rule set -->
-     <rule ref="rulesets/cleancode.xml/BooleanArgumentFlag" />
+    <rule ref="rulesets/cleancode.xml/BooleanArgumentFlag" />
     <rule ref="rulesets/cleancode.xml/ElseExpression"/>
 <!--     <rule ref="rulesets/cleancode.xml/StaticAccess" />-->
     <!-- Import the some rules of code size rule set -->
