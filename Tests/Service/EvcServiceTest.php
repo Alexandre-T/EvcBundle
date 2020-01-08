@@ -23,7 +23,6 @@ use Alexandre\EvcBundle\Model\Purchase;
 use Alexandre\EvcBundle\Service\EvcService;
 use Alexandre\EvcBundle\Service\RequestService;
 use Alexandre\EvcBundle\Service\RequestServiceInterface;
-use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Unirest\Response;
@@ -95,7 +94,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function accountShouldBeHuge(): void
@@ -109,7 +107,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function accountShouldBeNegative(): void
@@ -123,7 +120,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function accountShouldBeZero(): void
@@ -137,7 +133,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function accountShouldNotBeAccessible(): void
@@ -154,7 +149,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function customerShouldBeCredited(): void
@@ -168,7 +162,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function customerShouldNotBeCredited(): void
@@ -185,7 +178,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function existsShouldReturnFalse(): void
@@ -199,7 +191,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function existsShouldReturnTrue(): void
@@ -213,7 +204,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function existsShouldThrowAnotherException(): void
@@ -230,7 +220,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function existsShouldThrowException(): void
@@ -247,7 +236,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function existsShouldThrowUnexpectedException(): void
@@ -264,7 +252,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesEmpty(): void
@@ -282,7 +269,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function getPurchasesFailed(): void
@@ -299,7 +285,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function getPurchasesFailedWhenDaysAreTooGreat(): void
@@ -313,7 +298,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function getPurchasesFailedWhenDaysAreTooSmall(): void
@@ -327,7 +311,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function getPurchasesJsonWithNoData(): void
@@ -344,7 +327,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesWithFilter(): void
@@ -366,7 +348,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function getPurchasesWithNonValidJson(): void
@@ -383,7 +364,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function getPurchasesWithoutFilter(): void
@@ -472,7 +452,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should not happen
      */
     public function personalCustomerShouldBeCreated(): void
@@ -487,7 +466,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function personalCustomerShouldNotBeCreated(): void
@@ -504,7 +482,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function personalCustomerWithAnotherSentence(): void
@@ -521,7 +498,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should NOT happen
      */
     public function setCredit(): void
@@ -536,7 +512,6 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
      * @throws EvcException this should happen
      */
     public function setCreditFailed(): void
