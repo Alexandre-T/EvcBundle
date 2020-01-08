@@ -19,6 +19,7 @@ namespace Alexandre\EvcBundle\Tests\Service;
 use Alexandre\EvcBundle\Exception\EvcException;
 use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Exception\NetworkException;
+use Alexandre\EvcBundle\Model\Customer;
 use Alexandre\EvcBundle\Model\Purchase;
 use Alexandre\EvcBundle\Service\EvcService;
 use Alexandre\EvcBundle\Service\RequestService;
@@ -264,7 +265,108 @@ class EvcServiceTest extends TestCase
     /**
      * @test
      *
-     * @throws Exception    when Aspect Mock is not well initialized
+     * Test the getPersonalCustomers when evc returns a fail message
+     *
+     * @throws EvcException this should happen
+     */
+    public function getCustomersFailed(): void
+    {
+        $response = new Response(200, 'fail: foo bar', '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(EvcException::class);
+        self::expectExceptionMessage('fail: foo bar');
+
+        $this->evcService->getPersonalCustomers();
+    }
+
+    /**
+     * @test
+     *
+     * Test the getPersonalCustomers with valid data
+     *
+     * @throws EvcException this should not happen
+     */
+    public function getPersonalCustomers(): void
+    {
+        $content = self::getMockedFile('get-customers.txt');
+        $response = new Response(200, $content, '', []);
+        $this->setMockedResponse($response);
+
+        $customers = $this->evcService->getPersonalCustomers();
+
+        self::assertIsArray($customers);
+        self::assertCount(3, $customers);
+        foreach ($customers as $customer) {
+            self::assertInstanceOf(Customer::class, $customer);
+            self::assertIsArray($customer->getOptions());
+            self::assertEmpty($customer->getOptions());
+            self::assertEmpty($customer->getOptions());
+            self::assertIsInt($customer->getIdentifier());
+            self::assertIsInt($customer->getCredit());
+        }
+
+        self::assertNotEquals($customers[0]->getIdentifier(), $customers[1]->getIdentifier());
+    }
+
+    /**
+     * @test
+     *
+     * Test the getPersonalCustomers with an empty file.
+     *
+     * @throws EvcException This should not happen
+     */
+    public function getPersonalCustomersEmpty(): void
+    {
+        $content = self::getMockedFile('empty-purchase.txt');
+        $response = new Response(200, $content, '', []);
+        $this->setMockedResponse($response);
+
+        $customers = $this->evcService->getPersonalCustomers();
+
+        self::assertIsArray($customers);
+        self::assertCount(0, $customers);
+    }
+
+    /**
+     * @test
+     *
+     * Test that the getPersonalCustomer throw an exception when Json does not contain data
+     *
+     * @throws EvcException this should happen
+     */
+    public function getPersonalCustomersJsonWithNoData(): void
+    {
+        $content = self::getMockedFile('empty-json.txt');
+        $response = new Response(200, $content, '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Json from evc.de does not contain data');
+        $this->evcService->getPersonalCustomers();
+    }
+
+    /**
+     * @test
+     *
+     * Test that the getPersonalCustomer throw an exception when Json contains non-valid data
+     *
+     * @throws EvcException this should happen
+     */
+    public function getPersonalCustomersWithNonValidJson(): void
+    {
+        $content = self::getMockedFile('invalid-json.txt');
+        $response = new Response(200, $content, '', []);
+        $this->setMockedResponse($response);
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Json from evc.de is not a valid JSON');
+        $this->evcService->getPersonalCustomers();
+    }
+
+    /**
+     * @test
+     *
      * @throws EvcException this should not happen
      */
     public function getPurchasesEmpty(): void

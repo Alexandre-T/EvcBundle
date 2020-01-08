@@ -1,0 +1,18 @@
+ok: JSON follows
+{
+   "status": "OK",
+   "data": [
+      {
+         "Customer": 33333,
+         "Credits": 0
+      },
+      {
+         "Customer": 11111,
+         "Credits": 100
+      },
+     {
+        "Customer": 22222,
+        "Credits": -10
+     }
+   ]
+}

@@ -19,6 +19,7 @@ namespace Alexandre\EvcBundle\Service;
 use Alexandre\EvcBundle\Exception\CredentialException;
 use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Exception\NetworkException;
+use Alexandre\EvcBundle\Model\Customer;
 use Alexandre\EvcBundle\Model\Purchase;
 
 /**
@@ -83,6 +84,18 @@ interface EvcServiceInterface
      * @throws NetworkException    when an error occurred while accessing EVC servers
      */
     public function exists(int $customer): bool;
+
+    /**
+     * Get list of personal customers.
+     * A personal customer is an EVC customer which have a personal account balance with current reseller.
+     *
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
+     *
+     * @return Customer[] An array of customers
+     */
+    public function getPersonalCustomers(): array;
 
     /**
      * Returns a collection of the purchases performed in the last X (up to 99) days.

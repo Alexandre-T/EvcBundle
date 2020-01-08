@@ -19,6 +19,7 @@ namespace Alexandre\EvcBundle\Service;
 use Alexandre\EvcBundle\Exception\CredentialException;
 use Alexandre\EvcBundle\Exception\LogicException;
 use Alexandre\EvcBundle\Exception\NetworkException;
+use Alexandre\EvcBundle\Model\Customer;
 use Alexandre\EvcBundle\Model\Purchase;
 
 /**
@@ -170,6 +171,37 @@ class EvcService implements EvcServiceInterface
     }
 
     /**
+     * Get list of personal customers.
+     * A personal customer is an EVC customer which have a personal account balance with current reseller.
+     *
+     * @throws LogicException      when a non-expected message is returned by API
+     * @throws CredentialException when credentials are not valid
+     * @throws NetworkException    when an error occurred while accessing EVC servers
+     *
+     * @return Customer[] An array of customers
+     */
+    public function getPersonalCustomers(): array
+    {
+        $params = [
+            'verb' => 'listcustomers',
+        ];
+
+        $response = $this->requester->request($params);
+        $json = $this->getJson($response->body);
+
+        $result = [];
+
+        foreach ($json['data'] as $data) {
+            $customer = new Customer($data);
+            if (null !== $customer->getIdentifier()) {
+                $result[] = $customer;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns a collection of the purchases performed in the last X (up to 99) days.
      *
      * @param int      $days     the number of
@@ -189,15 +221,9 @@ class EvcService implements EvcServiceInterface
             'verb' => 'checkevccustomer',
             'customer' => $customer,
         ];
+
         $response = $this->requester->request($params);
-
-        $result = preg_match('/^ok:\sJSON\sfollows\s([\S\s]+)/', $response->body, $matches);
-
-        $this->checkResult($result, $matches, $response->body);
-
-        $json = json_decode($matches[1], true);
-
-        $this->checkJson($json);
+        $json = $this->getJson($response->body);
 
         $result = [];
         foreach ($json['data'] as $data) {
@@ -319,5 +345,27 @@ class EvcService implements EvcServiceInterface
         if (1 !== $result || !is_array($matches) || 2 !== count($matches)) {
             throw new LogicException(sprintf('Unexpected message from evc: %s', trim($body)));
         }
+    }
+
+    /**
+     * Return the JSON from the response body.
+     *
+     * @param string $body the EVC response body
+     *
+     * @throws LogicException when data returned by EVC as not formatted as expected
+     *
+     * @return array An array from json
+     */
+    private function getJson(string $body): array
+    {
+        $result = preg_match('/^ok:\sJSON\sfollows\s([\S\s]+)/', $body, $matches);
+
+        $this->checkResult($result, $matches, $body);
+
+        $json = json_decode($matches[1], true);
+
+        $this->checkJson($json);
+
+        return $json;
     }
 }
