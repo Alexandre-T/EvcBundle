@@ -60,6 +60,33 @@ class PurchaseTest extends TestCase
     }
 
     /**
+     * Test the constructor without element.
+     */
+    public function testConstructor(): void
+    {
+        $purchase = new Purchase();
+        self::assertNull($purchase->getBuild());
+        self::assertNull($purchase->getCharacteristic());
+        self::assertNull($purchase->getComputer());
+        self::assertNull($purchase->getCustomer());
+        self::assertNull($purchase->getDate());
+        self::assertNull($purchase->getEcuBuild());
+        self::assertNull($purchase->getEcuManufacturer());
+        self::assertNull($purchase->getEcuNrEcu());
+        self::assertNull($purchase->getEcuNrProd());
+        self::assertNull($purchase->getFilename());
+        self::assertNull($purchase->getIp());
+        self::assertNull($purchase->getManufacturer());
+        self::assertNull($purchase->getModel());
+        self::assertNull($purchase->getSeries());
+        self::assertNull($purchase->getSoftware());
+        self::assertNull($purchase->getSoftwareVersion());
+        self::assertIsArray($purchase->getOptions());
+        self::assertEmpty($purchase->getOptions());
+        self::assertCount(0, $purchase->getOptions());
+    }
+
+    /**
      * test getCustomer.
      */
     public function testCustomer(): void
