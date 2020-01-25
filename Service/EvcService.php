@@ -124,6 +124,7 @@ class EvcService implements EvcServiceInterface
     public function createPersonalCustomer(int $customer): void
     {
         $params = [
+            //FIXME IN MASTER addcustomer
             'verb' => 'checkevccustomer',
             'customer' => $customer,
         ];
@@ -218,6 +219,7 @@ class EvcService implements EvcServiceInterface
         $this->checkDays($days);
 
         $params = [
+            //FIXME in master getrecentpurchases
             'verb' => 'checkevccustomer',
             'customer' => $customer,
         ];
