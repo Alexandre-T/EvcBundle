@@ -4,15 +4,11 @@ ok: JSON follows
    "data": [
       {
          "Customer": 33333,
-         "Credits": 0
+         "Credits": 42
       },
       {
-         "Customer": 11111,
-         "Credits": 100
-      },
-     {
-        "Customer": 22222,
-        "Credits": -10
-     }
+         "Customer": 44444,
+         "Credits": 42
+      }
    ]
 }

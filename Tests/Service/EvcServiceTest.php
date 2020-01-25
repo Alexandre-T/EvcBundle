@@ -284,7 +284,7 @@ class EvcServiceTest extends TestCase
         $customers = $this->evcService->getPersonalCustomers();
 
         self::assertIsArray($customers);
-        self::assertCount(3, $customers);
+        self::assertCount(2, $customers);
         foreach ($customers as $customer) {
             self::assertInstanceOf(Customer::class, $customer);
             self::assertIsArray($customer->getOptions());
