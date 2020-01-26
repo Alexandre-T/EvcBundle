@@ -70,8 +70,6 @@ class Customer
 
     /**
      * Credit getter.
-     *
-     * @return int
      */
     public function getCredit(): int
     {

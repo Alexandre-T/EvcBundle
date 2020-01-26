@@ -33,6 +33,7 @@ class EmulationService implements RequestServiceInterface
         'fail: no api authorization',
         'fail: no user authorization',
         'fail: unknown verb',
+        'fail: no verb',
     ];
 
     /**
@@ -75,68 +76,22 @@ class EmulationService implements RequestServiceInterface
      *
      * @param array $params the query parameters
      *
-     * @return Response
-     *
-     * @throws NetworkException when customer identifier is 55555
+     * @throws NetworkException    when customer identifier is 55555
      * @throws CredentialException when customer identifier is 66666
-     * @throws LogicException when customer identifier is 77777
+     * @throws LogicException      when customer identifier is 77777
      */
     public function get(array $params): Response
     {
         $params += $this->getParams();
 
-        if (!key_exists('verb', $params)) {
+        if (!array_key_exists('verb', $params)) {
             return $this->response('fail: no verb');
         }
 
-        $customer = 0;
-        if (key_exists('customer', $params)) {
-            $customer = (int)$params['customer'];
-        }
+        $customer = $this->initCustomer($params);
+        $credit = $this->initCredit($params);
 
-        $credit = 0;
-        if (key_exists('credits', $params)) {
-            $credit = (int)$params['credits'];
-        }
-
-        if (55555 === $customer) {
-            throw new NetworkException(
-                'Emulation service throws a network exception because your calling the 55555 customer.'
-            );
-        }
-
-        if (66666 === $customer) {
-            throw new CredentialException(
-                'Emulation service throws a credential exception because your calling the 66666 customer.'
-            );
-        }
-
-        if (77777 === $customer) {
-            throw new LogicException(
-                'Emulation service throws a logic exception because your calling the 77777 customer.'
-            );
-        }
-
-        switch ($params['verb']) {
-            case 'addcustomer':
-                return $this->response($this->addCustomer($customer));
-            case 'addcustomeraccount':
-                return $this->response($this->addCustomerAccount($customer, $credit));
-            case 'checkcustomer':
-                return $this->response($this->checkCustomer($customer));
-            case 'checkevccustomer':
-                return $this->response($this->checkEvcCustomer($customer));
-            case 'getcustomeraccount':
-                return $this->response($this->getCustomerAccount($customer));
-            case 'getrecentpurchases':
-                return $this->response($this->getRecentPurchases());
-            case 'listcustomers':
-                return $this->response($this->listCustomers());
-            case 'setcustomeraccount':
-                return $this->response($this->setCustomerAccount($customer, $credit));
-            default:
-                return $this->response('fail: unknown verb');
-        }
+        return $this->response($this->analyzeVerb($params['verb'], $customer, $credit));
     }
 
     /**
@@ -147,18 +102,6 @@ class EmulationService implements RequestServiceInterface
     public function isCredentialError(string $message): bool
     {
         return in_array($message, self::CREDENTIAL_ERRORS);
-    }
-
-    /**
-     * Does this text is a fail?
-     *
-     * @param string $body the text to analyze
-     *
-     * @return bool True when the text begins with "fail:"
-     */
-    public function isFailing(string $body): bool
-    {
-        return 1 === preg_match('|^fail:\s|', $body);
     }
 
     /**
@@ -174,44 +117,11 @@ class EmulationService implements RequestServiceInterface
     {
         $response = $this->get($params);
 
-        if (200 !== $response->code) {
-            throw new NetworkException(sprintf('Evc API returns a response with code %d', $response->code));
-        }
-
         if ($this->isCredentialError($response->body)) {
             throw new CredentialException(sprintf('Credential error: %s', $response->body));
         }
 
-        if ($this->isFailing($response->body)) {
-            //TODO dead code to test
-            throw new LogicException(sprintf('Unexpected evc message: %s', $response->body));
-        }
-
         return $response;
-    }
-
-    /**
-     * Return array of default params.
-     */
-    private function getParams(): array
-    {
-        return [
-            'apiid' => $this->api,
-            'password' => $this->password,
-            'username' => $this->username,
-        ];
-    }
-
-    /**
-     * Create and return an Unirest Response.
-     *
-     * @param string $body body of the response
-     *
-     * @return Response
-     */
-    private function response(string $body): Response
-    {
-        return new Response(200, $body, '');
     }
 
     /**
@@ -249,6 +159,39 @@ class EmulationService implements RequestServiceInterface
             case '11111':
             default:
                 return 'fail: this is not a personal customer of you';
+        }
+    }
+
+    /**
+     * Analyze verb and returns the response body.
+     *
+     * @param string $verb     the action name
+     * @param int    $customer the customer identifier
+     * @param int    $credit   the credit
+     *
+     * @return Response
+     */
+    private function analyzeVerb(string $verb, int $customer, int $credit): string
+    {
+        switch ($verb) {
+            case 'addcustomer':
+                return $this->addCustomer($customer);
+            case 'addcustomeraccount':
+                return $this->addCustomerAccount($customer, $credit);
+            case 'checkcustomer':
+                return $this->checkCustomer($customer);
+            case 'checkevccustomer':
+                return $this->checkEvcCustomer($customer);
+            case 'getcustomeraccount':
+                return $this->getCustomerAccount($customer);
+            case 'getrecentpurchases':
+                return $this->getRecentPurchases();
+            case 'listcustomers':
+                return $this->listCustomers();
+            case 'setcustomeraccount':
+                return $this->setCustomerAccount($customer, $credit);
+            default:
+                return 'fail: unknown verb';
         }
     }
 
@@ -307,11 +250,66 @@ class EmulationService implements RequestServiceInterface
     }
 
     /**
+     * Return array of default params.
+     */
+    private function getParams(): array
+    {
+        return [
+            'apiid' => $this->api,
+            'password' => $this->password,
+            'username' => $this->username,
+        ];
+    }
+
+    /**
      * Get the recent purchases of reseller.
      */
     private function getRecentPurchases(): string
     {
-         return file_get_contents(__DIR__ . '/../Resources/tests/get-purchase.txt');
+        return file_get_contents(__DIR__.'/../Resources/tests/get-purchase.txt');
+    }
+
+    /**
+     * Initialize credits.
+     *
+     * @param array $params the parameters
+     */
+    private function initCredit(array $params)
+    {
+        if (array_key_exists('credits', $params)) {
+            return (int) $params['credits'];
+        }
+
+        return 0;
+    }
+
+    /**
+     * Initialize customer identifier.
+     *
+     * @param array $params the parameters
+     *
+     * @throws NetworkException    when customer identifier is 55555
+     * @throws CredentialException when customer identifier is 66666
+     * @throws LogicException      when customer identifier is 77777
+     */
+    private function initCustomer(array $params)
+    {
+        if (!array_key_exists('customer', $params)) {
+            return 0;
+        }
+
+        $customer = (int) $params['customer'];
+
+        switch ($customer) {
+            case 55555:
+                throw new NetworkException('Network exception: you called the 55555 customer.');
+            case 66666:
+                throw new CredentialException('Credential exception: you called the 66666 customer.');
+            case 77777:
+                throw new LogicException('Logic exception: you called the 77777 customer.');
+        }
+
+        return $customer;
     }
 
     /**
@@ -319,7 +317,17 @@ class EmulationService implements RequestServiceInterface
      */
     private function listCustomers(): string
     {
-         return file_get_contents(__DIR__ . '/../Resources/tests/get-customers.txt');
+        return file_get_contents(__DIR__.'/../Resources/tests/get-customers.txt');
+    }
+
+    /**
+     * Create and return an Unirest Response.
+     *
+     * @param string $body body of the response
+     */
+    private function response(string $body): Response
+    {
+        return new Response(200, $body, '');
     }
 
     /**
