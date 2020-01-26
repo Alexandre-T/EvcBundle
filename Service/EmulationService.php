@@ -224,7 +224,7 @@ class EmulationService implements RequestServiceInterface
             case '44444':
             case '33333':
             case '22222':
-                return 'ok';
+                return 'ok: evc customer exists';
             case '11111':
             default:
                 return 'fail: unknown evc customer';

@@ -229,19 +229,19 @@ final class EmulationServiceTest extends TestCase
             'verb' => 'checkevccustomer',
             'customer' => 22222,
         ]);
-        self::assertResponse('ok', $actual);
+        self::assertResponse('ok: evc customer exists', $actual);
 
         $actual = $this->requester->get([
             'verb' => 'checkevccustomer',
             'customer' => 33333,
         ]);
-        self::assertResponse('ok', $actual);
+        self::assertResponse('ok: evc customer exists', $actual);
 
         $actual = $this->requester->get([
             'verb' => 'checkevccustomer',
             'customer' => 44444,
         ]);
-        self::assertResponse('ok', $actual);
+        self::assertResponse('ok: evc customer exists', $actual);
     }
 
     /**
@@ -380,7 +380,7 @@ final class EmulationServiceTest extends TestCase
             'verb' => 'checkevccustomer',
             'customer' => 33333,
         ]);
-        self::assertResponse('ok', $actual);
+        self::assertResponse('ok: evc customer exists', $actual);
     }
 
     /**
