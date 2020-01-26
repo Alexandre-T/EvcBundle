@@ -124,7 +124,7 @@ final class EmulationServiceTest extends TestCase
             'verb' => 'addcustomer',
             'customer' => 22222,
         ]);
-        self::assertResponse('ok', $actual);
+        self::assertResponse('ok: customer added', $actual);
 
         $actual = $this->requester->get([
             'verb' => 'addcustomer',

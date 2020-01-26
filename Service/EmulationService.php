@@ -136,7 +136,7 @@ class EmulationService implements RequestServiceInterface
             case '33333':
                 return 'fail: customer already exists';
             case '22222':
-                return 'ok';
+                return 'ok: customer added';
             case '11111':
             default:
                 return 'fail: unknown customer';
