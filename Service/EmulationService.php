@@ -76,6 +76,10 @@ class EmulationService implements RequestServiceInterface
      * @param array $params the query parameters
      *
      * @return Response
+     *
+     * @throws NetworkException when customer identifier is 55555
+     * @throws CredentialException when customer identifier is 66666
+     * @throws LogicException when customer identifier is 77777
      */
     public function get(array $params): Response
     {
@@ -93,6 +97,24 @@ class EmulationService implements RequestServiceInterface
         $credit = 0;
         if (key_exists('credits', $params)) {
             $credit = (int)$params['credits'];
+        }
+
+        if (55555 === $customer) {
+            throw new NetworkException(
+                'Emulation service throws a network exception because your calling the 55555 customer.'
+            );
+        }
+
+        if (66666 === $customer) {
+            throw new CredentialException(
+                'Emulation service throws a credential exception because your calling the 66666 customer.'
+            );
+        }
+
+        if (77777 === $customer) {
+            throw new LogicException(
+                'Emulation service throws a logic exception because your calling the 77777 customer.'
+            );
         }
 
         switch ($params['verb']) {
@@ -153,7 +175,6 @@ class EmulationService implements RequestServiceInterface
         $response = $this->get($params);
 
         if (200 !== $response->code) {
-            //TODO dead code to test
             throw new NetworkException(sprintf('Evc API returns a response with code %d', $response->code));
         }
 

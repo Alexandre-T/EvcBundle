@@ -62,6 +62,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testAddCustomer()
     {
@@ -92,6 +96,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testAddCustomerAccount()
     {
@@ -125,6 +133,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testCheckCustomer()
     {
@@ -155,6 +167,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testCheckEvcCustomer()
     {
@@ -185,6 +201,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testGetCustomerAccount()
     {
@@ -215,6 +235,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testGetRecentPurchases()
     {
@@ -227,6 +251,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testSetCustomerAccount()
     {
@@ -260,6 +288,10 @@ final class EmulationServiceTest extends TestCase
 
     /**
      * Test valid request.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
     public function testListCustomers()
     {
@@ -271,11 +303,60 @@ final class EmulationServiceTest extends TestCase
     }
 
     /**
+     * When I use the 55555 customer, Emulation service throws a NetworkException.
      *
+     * @throws NetworkException It should happen
+     * @throws LogicException   It should NOT happen
+     * @throws CredentialException It should NOT happen
      */
-    public function testRequest(): void
+    public function testNetworkException(): void
     {
+        self::expectException(NetworkException::class);
+        self::expectExceptionMessage(
+            'Emulation service throws a network exception because your calling the 55555 customer.'
+        );
+        $this->requester->request([
+            'verb' => 'foo',
+            'customer' => 55555,
+        ]);
+    }
 
+    /**
+     * When I use the 66666 customer, Emulation service throws a CredenditalException.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should NOT happen
+     * @throws CredentialException It should happen
+     */
+    public function testCredentialException(): void
+    {
+        self::expectException(CredentialException::class);
+        self::expectExceptionMessage(
+            'Emulation service throws a credential exception because your calling the 66666 customer.'
+        );
+        $this->requester->request([
+            'verb' => 'foo',
+            'customer' => 66666,
+        ]);
+    }
+
+    /**
+     * When I use the 77777 customer, Emulation service throws a LogicException.
+     *
+     * @throws NetworkException    It should NOT happen
+     * @throws LogicException      It should happen
+     * @throws CredentialException It should NOT happen
+     */
+    public function testLogicException(): void
+    {
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage(
+            'Emulation service throws a logic exception because your calling the 77777 customer.'
+        );
+        $this->requester->request([
+            'verb' => 'foo',
+            'customer' => 77777,
+        ]);
     }
 
     /**
