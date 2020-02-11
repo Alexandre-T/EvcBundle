@@ -12,7 +12,7 @@ of the Composer documentation.
 Applications that use Symfony Flex
 ----------------------------------
 
-Open a command console, enter your project directory and execute:
+Open a command console, go to your symfony project directory and execute:
 
 ```console
 $ composer require alexandret/evc-bundle
@@ -27,7 +27,7 @@ EVC_PASSWORD = ''
 ###< alexandret/evc-bundle ###
 ```
 
-Look at the configuration section for more explanation
+Look at the configuration section for more explanation.
 
 Applications that don't use Symfony Flex
 ----------------------------------------
