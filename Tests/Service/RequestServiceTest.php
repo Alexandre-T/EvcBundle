@@ -172,7 +172,8 @@ class RequestServiceTest extends TestCase
         $response = new Response($code, $body, null, []);
         $mock = $this->getMockBuilder(RequestService::class)
             ->setConstructorArgs($params)
-            ->onlyMethods(['get'])
+            //TODO replace with onlyMethods when PHP7.2 will be removed from compatibility and use only PHPUnit9
+            ->setMethods(['get'])
             ->getMock()
         ;
 
@@ -198,7 +199,8 @@ class RequestServiceTest extends TestCase
     {
         $mock = $this->getMockBuilder(RequestService::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['get'])
+            //TODO replace with onlyMethods when PHP7.2 will be removed from compatibility and use only PHPUnit9
+            ->setMethods(['get'])
             ->getMock()
         ;
 

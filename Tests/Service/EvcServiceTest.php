@@ -58,7 +58,8 @@ class EvcServiceTest extends TestCase
 
         $this->requester = $this->getMockBuilder(RequestService::class)
             ->setConstructorArgs($params)
-            ->onlyMethods(['get'])
+            //TODO replace with onlyMethods when PHP7.2 will be removed from compatibility and use only PHPUnit9
+            ->setMethods(['get'])
             ->getMock()
         ;
 
