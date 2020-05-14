@@ -1,4 +1,9 @@
-# EvcBundle : Installation
+# EvcBundle
+
+This symfony bundle implements service to use the [evc.de](https://www.evc.de) API.
+
+
+# Installation
 
 Make sure Composer is installed globally, as explained in the
 [installation chapter](https://getcomposer.org/doc/00-intro.md)
@@ -7,7 +12,7 @@ of the Composer documentation.
 Applications that use Symfony Flex
 ----------------------------------
 
-Open a command console, enter your project directory and execute:
+Open a command console, go to your symfony project directory and execute:
 
 ```console
 $ composer require alexandret/evc-bundle
@@ -22,7 +27,7 @@ EVC_PASSWORD = ''
 ###< alexandret/evc-bundle ###
 ```
 
-Look at the configuration section for more explanation
+Look at the configuration section for more explanation.
 
 Applications that don't use Symfony Flex
 ----------------------------------------
@@ -91,7 +96,7 @@ How to mock your requests to the API?
 You want to test your application with mocked customer and avoid to send data to the real evc.de API?
 By default, our bundle is created to use a requester service that embed Unirest/Request. In your
 `config/package/dev` repository, add new lines at the end of the `service.yaml` file. (Do not hesitate to create
-a new `service.yaml` file if there is no file yet.
+a new `service.yaml` file if there is no file yet. If you use flex to install this bundle, this is already done! :)
 
 ```yaml
 # config/packages/dev/service.yaml
@@ -107,13 +112,13 @@ services:
 Instead of calling the `RequesterService`, dev environment will use an `EmulationService`.
 
 There is four declared customer.
- * `11111` is the identifier of a customer that does not exists. Use it when you want to test your application with a non-existent user
- * `22222` customer exists, but he is not a personal user. Use it when you want to test your application with a non-personal customer
+ * `11111` is the identifier of a customer that does not exists. Use it when you want to test your application with a non-existent customer
+ * `22222` customer exists, but he is not a personal user of your reseller. Use it when you want to test your application with a non-personal customer
  * `33333` customer exists and he is a personal user with 42 credits.
  * `44444` is a personal customer too. He has 42 credits too.
- * `55555` Each time you call the 55555 customer, Emulation service will throw a `NetworkException`to test your application as if evc.de wasn't reachable.
+ * `55555` Each time you call the 55555 customer, Emulation service will throw a `NetworkException`to test your application as if evc API wasn't reachable.
  * `66666` Each time you call the 66666 customer, Emulation service will throw a `CredentialException` to test your application when your configuration is wrong.
- * `77777` Each time you call the 77777 customer, Emulation service will throw a `LogicException`. We do not think it is useful, but if you want to test.
+ * `77777` Each time you call the 77777 customer, Emulation service will throw a `LogicException`. We do not think it is useful, but if you want to test. A logic exception could be throw if API changes or if the answer is truncated.
  
 Exceptions
 ----------
