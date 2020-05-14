@@ -35,7 +35,7 @@
     "phpmd/phpmd": "^2.8",
     "squizlabs/php_codesniffer": "^3.5",
     "symfony/debug": "^3.4|^4.3|^5.0",
-    "phpunit/phpunit": "^9.1.4"
+    "phpunit/phpunit": "^8"
   },
   "scripts": {
     "phpcs": "phpcs . --standard=phpcs.xml.dist -s",
