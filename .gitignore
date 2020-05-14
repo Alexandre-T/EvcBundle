@@ -9,7 +9,7 @@
 composer.lock
 symfony.lock
 bin/console
-bin/phpunit
+bin/.phpunit
 /config
 /vendor
 /Tests/.gitignore
@@ -23,9 +23,7 @@ bin/phpunit
 /.phpcs-cache
 /phpcs.xml
 ###< squizlabs/php_codesniffer ###
-
-###> symfony/phpunit-bridge ###
-.phpunit
-.phpunit.result.cache
+###> phpunit/phpunit ###
 /phpunit.xml
-###< symfony/phpunit-bridge ###
+.phpunit.result.cache
+###< phpunit/phpunit ###
